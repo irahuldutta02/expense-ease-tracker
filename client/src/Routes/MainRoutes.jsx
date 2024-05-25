@@ -4,6 +4,8 @@ import { HomePage } from "../pages/HomePage";
 import { NotFound } from "../pages/NotFound";
 import { DashboardLayout } from "../layouts/DashboardLayout";
 import { Dashboard } from "../pages/Dashboard";
+import { SignIn } from "../pages/SignIn";
+import { SignUp } from "../pages/SignUp";
 
 export const MainRoutes = () => {
   const auth = false;
@@ -33,6 +35,8 @@ export const MainRoutes = () => {
       element: <RootLayout />,
       children: [
         { path: "/", element: <HomePage /> },
+        { path: "/sign-in", element: <SignIn /> },
+        { path: "/sign-up", element: <SignUp /> },
         { path: "*", element: <NotFound /> },
       ],
     },

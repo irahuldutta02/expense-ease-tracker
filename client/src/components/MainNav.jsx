@@ -9,10 +9,10 @@ export const MainNav = () => {
   return (
     <>
       <nav>
-        <div className="container flex items-center justify-between px-6 py-3 mx-auto max-w-6xl">
+        <div className="container flex items-center justify-between px-4 py-8 mx-auto max-w-6xl">
           <Link
             to={"/"}
-            className="flex justify-center items-center gap-2 dark:text-white"
+            className="flex justify-center items-center gap-4 dark:text-white"
           >
             <img
               className="w-auto h-10 sm:h-8"
@@ -22,7 +22,7 @@ export const MainNav = () => {
             <p className="text-3xl font-bold">ExpenseEase</p>
           </Link>
 
-          <div className=" flex justify-center items-center gap-2">
+          <div className=" flex justify-center items-center gap-4">
             <div
               className="my-1 text-sm font-medium text-gray-500 rtl:-scale-x-100 dark:text-gray-200 hover:text-blue-500 dark:hover:text-blue-400 lg:mx-4 lg:my-0 cursor-pointer"
               onClick={toggleTheme}
@@ -36,7 +36,7 @@ export const MainNav = () => {
 
             <Link
               className="my-1 text-sm font-medium text-gray-500 rtl:-scale-x-100 dark:text-gray-200 hover:text-blue-500 dark:hover:text-blue-400 lg:mx-4 lg:my-0"
-              to={"/"}
+              to={"/sign-in"}
             >
               <FaSignInAlt size={30} />
             </Link>
