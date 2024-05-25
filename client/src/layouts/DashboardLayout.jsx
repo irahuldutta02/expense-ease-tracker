@@ -8,7 +8,7 @@ export const DashboardLayout = () => {
       <ScrollToTop>
         <DashboardNav />
         <div className="p-4 sm:ml-64 dark:bg-gray-900 dark:text-white min-h-screen">
-          <div className="mt-14 mb-14">
+          <div className="mt-14 mb-14 max-w-6xl m-auto">
             <Outlet />
           </div>
         </div>
