@@ -25,7 +25,7 @@ app.use(cookieParser());
 app.get("/", (req, res) => {
   return res.status(200).json({
     status: 200,
-    message: "API is running...",
+    message: "ExpenseEase api is up and running!",
   });
 });
 
