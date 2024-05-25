@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const modeSchema = new Schema(
@@ -20,4 +20,4 @@ modeSchema.index({ UserId: 1 });
 
 const Mode = mongoose.model("Mode", modeSchema);
 
-export default Mode;
+module.exports = Mode;

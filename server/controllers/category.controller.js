@@ -1,5 +1,5 @@
-import asyncHandler from "express-async-handler";
-import Category from "../models/category.model.js";
+const asyncHandler = require("express-async-handler");
+const Category = require("../models/category.model.js");
 
 const allListByUserId = asyncHandler(async (req, res) => {
   try {
@@ -20,4 +20,4 @@ const allListByUserId = asyncHandler(async (req, res) => {
   }
 });
 
-export { allListByUserId };
+module.exports = { allListByUserId };

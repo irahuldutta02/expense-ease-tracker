@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "This is the server for the Expense Tracker App. It is built using Node.js, Express.js, and MongoDB.",
   "main": "server.js",
-  "type": "module",
   "scripts": {
     "dev": "nodemon server.mjs",
     "start": "node server.mjs"

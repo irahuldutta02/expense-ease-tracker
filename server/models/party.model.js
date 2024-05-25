@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const partySchema = new Schema(
@@ -20,4 +20,4 @@ partySchema.index({ UserId: 1 });
 
 const Party = mongoose.model("Party", partySchema);
 
-export default Party;
+module.exports = Party;

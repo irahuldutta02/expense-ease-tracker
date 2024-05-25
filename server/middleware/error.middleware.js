@@ -1,4 +1,4 @@
-import { NODE_ENV } from "../config/server.config.js";
+const { NODE_ENV } = require("../config/server.config.js");
 
 const errorHandler = (err, req, res, next) => {
   let statusCode = res.statusCode === 200 ? 500 : res.statusCode;
@@ -23,4 +23,4 @@ const notFound = (req, res, next) => {
   next(error);
 };
 
-export { errorHandler, notFound };
+module.exports = { errorHandler, notFound };

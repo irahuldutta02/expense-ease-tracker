@@ -1,6 +1,6 @@
-import asyncHandler from "express-async-handler";
-import User from "../models/user.model.js";
-import generateToken from "../utils/generateToken.js";
+const asyncHandler = require("express-async-handler");
+const User = require("../models/user.model.js");
+const generateToken = require("../utils/generateToken.js");
 
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -111,4 +111,4 @@ const logOutUser = asyncHandler((req, res) => {
   res.status(200).json({ message: "Logged out successfully" });
 });
 
-export { logOutUser, loginUser, registerUser, updateUserProfile };
+module.exports = { logOutUser, loginUser, registerUser, updateUserProfile };

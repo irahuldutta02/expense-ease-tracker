@@ -1,16 +1,16 @@
-import bodyParser from "body-parser";
-import cookieParser from "cookie-parser";
-import cors from "cors";
-import express from "express";
-import { PORT } from "./config/server.config.js";
-import connectDB from "./db/db.js";
-import { errorHandler, notFound } from "./middleware/error.middleware.js";
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const cors = require("cors");
+const express = require("express");
+const { PORT } = require("./config/server.config.js");
+const connectDB = require("./db/db.js");
+const { errorHandler, notFound } = require("./middleware/error.middleware.js");
 
-import categoryRoutes from "./routes/category.routes.js";
-import expenseRoutes from "./routes/expense.routes.js";
-import modeRoutes from "./routes/mode.routes.js";
-import partyRoutes from "./routes/party.routes.js";
-import userRoutes from "./routes/user.routes.js";
+const categoryRoutes = require("./routes/category.routes.js");
+const expenseRoutes = require("./routes/expense.routes.js");
+const modeRoutes = require("./routes/mode.routes.js");
+const partyRoutes = require("./routes/party.routes.js");
+const userRoutes = require("./routes/user.routes.js");
 
 const app = express();
 connectDB();

@@ -1,5 +1,5 @@
-import asyncHandler from "express-async-handler";
-import Expense from "../models/expense.model.js";
+const asyncHandler = require("express-async-handler");
+const Expense = require("../models/expense.model.js");
 
 const allListByUserId = asyncHandler(async (req, res) => {
   try {
@@ -21,4 +21,4 @@ const allListByUserId = asyncHandler(async (req, res) => {
   }
 });
 
-export { allListByUserId };
+module.exports = { allListByUserId };

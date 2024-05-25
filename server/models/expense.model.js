@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const { Schema } = mongoose;
 
@@ -52,4 +52,4 @@ expenseSchema.index({ UserId: 1 });
 
 const Expense = mongoose.model("Expense", expenseSchema);
 
-export default Expense;
+module.exports = Expense;
