@@ -1,7 +1,7 @@
-import { FaMoon, FaSignInAlt, FaSun } from "react-icons/fa";
+import { useContext } from "react";
+import { GoMoon, GoSun } from "react-icons/go";
 import { Link } from "react-router-dom";
 import { ThemeContext } from "../context/ContextProvider";
-import { useContext } from "react";
 
 export const MainNav = () => {
   const { theme, toggleTheme } = useContext(ThemeContext);
@@ -9,37 +9,31 @@ export const MainNav = () => {
   return (
     <>
       <nav>
-        <div className="container flex items-center justify-between px-4 py-8 mx-auto max-w-6xl">
+        <div className="container flex items-center justify-between p-4 py-8 mx-auto max-w-6xl">
           <Link
             to={"/"}
             className="flex justify-center items-center gap-4 dark:text-white"
           >
             <img
               className="w-auto h-10 sm:h-8"
-              src="/ExpenseEaseLogo.svg"
-              alt=""
+              src="/assets/logo/expense-ease-without-bg-svg/1.svg"
+              alt="logo"
             />
-            <p className="text-3xl font-bold">ExpenseEase</p>
+            <p className="text-2xl font-bold">ExpenseEase</p>
           </Link>
 
-          <div className=" flex justify-center items-center gap-4">
-            <div
-              className="my-1 text-sm font-medium text-gray-500 rtl:-scale-x-100 dark:text-gray-200 hover:text-blue-500 dark:hover:text-blue-400 lg:mx-4 lg:my-0 cursor-pointer"
+          <div className=" flex justify-center items-center gap-4  dark:text-white">
+            <span
               onClick={toggleTheme}
+              className={`cursor-pointer p-2 rounded-full shadow-lg font-bold
+              ${theme === "dark" ? "bg-yellow-500" : "bg-blue-500"}`}
             >
               {theme === "dark" ? (
-                <FaSun color="yellow" size={30} />
+                <GoSun color="white" size={22} />
               ) : (
-                <FaMoon size={25} />
+                <GoMoon color="white" size={22} />
               )}
-            </div>
-
-            <Link
-              className="my-1 text-sm font-medium text-gray-500 rtl:-scale-x-100 dark:text-gray-200 hover:text-blue-500 dark:hover:text-blue-400 lg:mx-4 lg:my-0"
-              to={"/sign-in"}
-            >
-              <FaSignInAlt size={30} />
-            </Link>
+            </span>
           </div>
         </div>
       </nav>

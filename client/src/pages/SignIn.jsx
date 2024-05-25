@@ -1,6 +1,58 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useLoginMutation } from "../redux/userApiSlice";
+import { setCredentials } from "../redux/userSlice";
 
 export const SignIn = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [login, { isLoading }] = useLoginMutation();
+
+  const validate = () => {
+    if (email.trim() === "" || password.trim() === "") {
+      toast.error("Invalid email or password");
+      return false;
+    }
+
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    if (!email.match(emailRegex)) {
+      toast.error("Invalid email address");
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validate()) {
+      return;
+    }
+
+    try {
+      const res = await login({ email, password }).unwrap();
+      dispatch(setCredentials({ ...res.data }));
+      toast.success("Login Successful");
+      navigate("/");
+    } catch (error) {
+      toast.error(
+        error?.data?.message ||
+          error?.message ||
+          error?.error ||
+          "An error occurred"
+      );
+    }
+
+    console.log("Form submitted");
+  };
+
   return (
     <>
       <section className="bg-white dark:bg-gray-900">
@@ -44,6 +96,8 @@ export const SignIn = () => {
                 type="email"
                 className="block w-full py-3 text-gray-700 bg-white border rounded-lg px-11 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
                 placeholder="Email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
@@ -69,11 +123,19 @@ export const SignIn = () => {
                 type="password"
                 className="block w-full px-10 py-3 text-gray-700 bg-white border rounded-lg dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
                 placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
 
             <div className="mt-6">
-              <button className="w-full px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-lg hover:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50">
+              <button
+                className={`w-full px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-lg hover:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50 ${
+                  isLoading && "opacity-70 cursor-not-allowed"
+                }`}
+                onClick={handleSubmit}
+                disabled={isLoading}
+              >
                 Sign In
               </button>
 

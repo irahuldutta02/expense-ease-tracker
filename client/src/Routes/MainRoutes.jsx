@@ -1,4 +1,4 @@
-import { useRoutes } from "react-router-dom";
+import { Navigate, useRoutes } from "react-router-dom";
 import { RootLayout } from "../layouts/RootLayout";
 import { HomePage } from "../pages/HomePage";
 import { NotFound } from "../pages/NotFound";
@@ -6,16 +6,18 @@ import { DashboardLayout } from "../layouts/DashboardLayout";
 import { Dashboard } from "../pages/Dashboard";
 import { SignIn } from "../pages/SignIn";
 import { SignUp } from "../pages/SignUp";
+import { useSelector } from "react-redux";
 
 export const MainRoutes = () => {
-  const auth = false;
+  const { userInfo } = useSelector((state) => state.user);
 
   const authenticatedRoutes = [
     {
       path: "/",
-      element: <RootLayout />,
       children: [
-        { path: "", element: <HomePage /> },
+        { path: "", element: <Navigate to="/dashboard" replace /> },
+        { path: "/sign-in", element: <Navigate to="/dashboard" replace /> },
+        { path: "/sign-up", element: <Navigate to="/dashboard" replace /> },
         { path: "*", element: <NotFound /> },
       ],
     },
@@ -42,7 +44,7 @@ export const MainRoutes = () => {
     },
   ];
 
-  const allRoutes = auth ? authenticatedRoutes : unauthenticatedRoutes;
+  const allRoutes = userInfo ? authenticatedRoutes : unauthenticatedRoutes;
 
   return useRoutes(allRoutes);
 };
