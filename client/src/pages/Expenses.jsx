@@ -1,4 +1,10 @@
+import { useGetExpensesQuery } from "../redux/expenseApiSlice";
+
 export const Expenses = () => {
+  const { data, isLoading, isError, refetch } = useGetExpensesQuery();
+
+  console.log({ data, isLoading, isError, refetch });
+
   return (
     <>
       <div className="flex justify-start items-center flex-col gap-4 w-full ">
