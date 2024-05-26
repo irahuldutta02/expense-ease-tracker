@@ -58,6 +58,10 @@ export const Expenses = () => {
   const [party, setParty] = useState("none");
   const [category, setCategory] = useState("none");
   const [mode, setMode] = useState("none");
+  const [remark, setRemark] = useState("");
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editId, setEditId] = useState(null);
 
   const expenses = data?.data || [];
   const formattedData = expenses.map((expense) => {
@@ -97,6 +101,24 @@ export const Expenses = () => {
     return acc + expense?.Cash_Out;
   }, 0);
 
+  const handleEditing = (expense) => {
+    setIsEditing(true);
+    setEditId(expense?._id);
+    setExpenseType(expense?.Cash_In ? "cash_in" : "cash_out");
+    setDateTime(expense?.Date);
+    setAmount(expense?.Cash_In || expense?.Cash_Out);
+    setParty(expense?.Party?._id || "none");
+    setCategory(expense?.Category?._id || "none");
+    setMode(expense?.Mode?._id || "none");
+    setRemark(expense?.Remark);
+    setAddExpenseModal(true);
+  };
+
+  const handleCancelEditing = () => {
+    setIsEditing(false);
+    setEditId(null);
+  };
+
   const renderTable = () => {
     const start = (currentPage - 1) * rowsPerPage;
     const end = start + rowsPerPage;
@@ -121,6 +143,9 @@ export const Expenses = () => {
       <tr
         key={expense?._id}
         className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 cursor-pointer"
+        onClick={() => {
+          handleEditing(expense);
+        }}
       >
         <td
           scope="row"
@@ -145,10 +170,22 @@ export const Expenses = () => {
         </td>
         <td className="px-6 py-4">
           <div className="flex justify-center items-center gap-4">
-            <button className=" text-blue-400 font-bold  rounded">
+            <button
+              className=" text-blue-400 font-bold  rounded hover:transform hover:scale-125 transition duration-300 ease-in-out"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleEditing(expense);
+              }}
+            >
               <FaEdit size={20} />
             </button>
-            <button className=" text-red-500 font-bold  rounded">
+            <button
+              className=" text-red-500 font-bold  rounded hover:transform hover:scale-125 transition duration-300 ease-in-out"
+              onClick={(e) => {
+                e.stopPropagation();
+                console.log("delete", expense?._id);
+              }}
+            >
               <MdDelete size={20} />
             </button>
           </div>
@@ -178,6 +215,7 @@ export const Expenses = () => {
   };
 
   const handleModalClose = () => {
+    handleCancelEditing();
     setAddExpenseModal(false);
     setExpenseType(null);
     handleResetForm();
@@ -189,6 +227,33 @@ export const Expenses = () => {
     setParty("none");
     setCategory("none");
     setMode("none");
+    setRemark("");
+  };
+
+  const handleSaveExpense = () => {
+    const expense = {
+      Date: dateTime,
+      Cash_In: expenseType === "cash_in" ? amount : null,
+      Cash_Out: expenseType === "cash_out" ? amount : null,
+      Party: party === "none" ? null : party,
+      Category: category === "none" ? null : category,
+      Mode: mode === "none" ? null : mode,
+      Remark: remark,
+    };
+    console.log("save expense", { expense });
+  };
+
+  const handleEditExpense = () => {
+    const expense = {
+      Date: dateTime,
+      Cash_In: expenseType === "cash_in" ? amount : null,
+      Cash_Out: expenseType === "cash_out" ? amount : null,
+      Party: party === "none" ? null : party,
+      Category: category === "none" ? null : category,
+      Mode: mode === "none" ? null : mode,
+      Remark: remark,
+    };
+    console.log("edit expense", { expense, editId });
   };
 
   useEffect(() => {
@@ -540,13 +605,19 @@ export const Expenses = () => {
                             <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
                               <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                                 {expenseType === "cash_in" ? (
-                                  <span className="text-green-500 font-bold">
-                                    Cash In
-                                  </span>
+                                  <>
+                                    <span className="text-green-500 font-bold">
+                                      Cash In
+                                    </span>
+                                    <span>{isEditing && " - Edit"}</span>
+                                  </>
                                 ) : (
-                                  <span className="text-red-500 font-bold">
-                                    Cash Out
-                                  </span>
+                                  <>
+                                    <span className="text-red-500 font-bold">
+                                      Cash Out
+                                    </span>
+                                    <span>{isEditing && " - Edit"}</span>
+                                  </>
                                 )}
                               </h3>
                               <button
@@ -717,26 +788,64 @@ export const Expenses = () => {
                                     ))}
                                   </select>
                                 </div>
+                                {/* description */}
+                                <div className="col-span-6">
+                                  <label
+                                    htmlFor="remark"
+                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                  >
+                                    Remark
+                                  </label>
+                                  <textarea
+                                    id="remark"
+                                    name="remark"
+                                    rows="3"
+                                    className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 outline-none"
+                                    value={remark}
+                                    onChange={(e) => setRemark(e.target.value)}
+                                  ></textarea>
+                                </div>
                               </div>
                             </div>
                             {/* <!-- Modal footer --> */}
                             <div className="flex justify-center gap-4 items-center p-6 space-x-3 rtl:space-x-reverse border-t border-gray-200 rounded-b dark:border-gray-600">
-                              <button
-                                type="submit"
-                                className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  handleResetForm();
-                                }}
-                              >
-                                Reset
-                              </button>
-                              <button
-                                type="submit"
-                                className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                              >
-                                Save
-                              </button>
+                              {!isEditing && (
+                                <button
+                                  type="submit"
+                                  className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleResetForm();
+                                  }}
+                                >
+                                  Reset
+                                </button>
+                              )}
+                              {!isEditing && (
+                                <button
+                                  type="submit"
+                                  className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleSaveExpense();
+                                  }}
+                                >
+                                  Save
+                                </button>
+                              )}
+
+                              {isEditing && (
+                                <button
+                                  type="submit"
+                                  className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleEditExpense();
+                                  }}
+                                >
+                                  Update
+                                </button>
+                              )}
                             </div>
                           </form>
                         </div>
