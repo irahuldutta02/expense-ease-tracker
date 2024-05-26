@@ -8,10 +8,6 @@ const expenseSchema = new Schema(
       type: String,
       required: true,
     },
-    Time: {
-      type: String,
-      required: true,
-    },
     Remark: {
       type: String,
       required: true,

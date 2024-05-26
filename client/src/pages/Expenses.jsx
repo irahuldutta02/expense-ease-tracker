@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   FaAngleLeft,
   FaAngleRight,
@@ -7,13 +8,14 @@ import {
   FaPlus,
   FaSearch,
 } from "react-icons/fa";
-import { useGetExpensesQuery } from "../redux/expenseApiSlice";
 import { MdDelete } from "react-icons/md";
-import { useEffect, useState } from "react";
-import { roundToTwoDecimalPlaces } from "../utils/roundToTwoDecimalPlaces";
-import { useGetModesQuery } from "../redux/modeApiSlice";
 import { useGetCategoriesQuery } from "../redux/categoryApiSlice";
+import { useGetExpensesQuery } from "../redux/expenseApiSlice";
+import { useGetModesQuery } from "../redux/modeApiSlice";
 import { useGetPartiesQuery } from "../redux/partyApiSlice";
+import { roundToTwoDecimalPlaces } from "../utils/roundToTwoDecimalPlaces";
+import { convertToReadableDateString } from "../utils/convertToReadableDateString";
+import { convertTo12HourTime } from "../utils/convertTo12HourTime";
 
 export const Expenses = () => {
   const { data, isLoading, isError, refetch } = useGetExpensesQuery();
@@ -62,7 +64,6 @@ export const Expenses = () => {
     return {
       ...expense,
       balance: 0.0,
-      stringDate: new Date(expense?.Date),
     };
   });
   let filteredExpenses = formattedData.filter((expense) => {
@@ -125,18 +126,23 @@ export const Expenses = () => {
           scope="row"
           className="px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
         >
-          {expense?.Date} <br />
-          {expense?.Time}
+          {convertToReadableDateString(expense?.Date)} <br />
+          {convertTo12HourTime(expense?.Date)}
         </td>
         <td className="px-6 py-4">{expense?.Remark}</td>
         <td className="px-6 py-4">{expense?.Party?.Name}</td>
         <td className="px-6 py-4">{expense?.Category?.Name}</td>
         <td className="px-6 py-4">{expense?.Mode?.Name}</td>
         <td className="px-6 py-4">
-          <span className="text-green-500 font-bold">{expense?.Cash_In}</span>
-          <span className="text-red-500 font-bold">{expense?.Cash_Out}</span>
+          <div className="w-24">
+            ₹{" "}
+            <span className="text-green-500 font-bold">{expense?.Cash_In}</span>
+            <span className="text-red-500 font-bold">{expense?.Cash_Out}</span>
+          </div>
         </td>
-        <td className="px-6 py-4">₹ {expense?.balance}</td>
+        <td className="px-6 py-4">
+          <div className="w-24">₹ {expense?.balance}</div>
+        </td>
         <td className="px-6 py-4">
           <div className="flex justify-center items-center gap-4">
             <button className=" text-blue-400 font-bold  rounded">
