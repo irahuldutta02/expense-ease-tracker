@@ -2,7 +2,7 @@ import { apiSlice } from "./apiSlice";
 import { EXPENSE_URL } from "../constants";
 import { BACKEND_URL } from "../constants";
 
-export const userApiSlice = apiSlice.injectEndpoints({
+export const expenseApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getExpenses: builder.query({
       query: () => ({
@@ -14,4 +14,4 @@ export const userApiSlice = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useGetExpensesQuery } = userApiSlice;
+export const { useGetExpensesQuery } = expenseApiSlice;
