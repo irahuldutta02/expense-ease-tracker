@@ -532,7 +532,7 @@ export const Expenses = () => {
               </div>
 
               {/* data table */}
-              <div className="flex justify-center w-full items-center py-4 gap-4 flex-wrap">
+              <div className="flex justify-center w-full items-center py-4 gap-4 flex-wrap ">
                 <div className="flex justify-start w-full items-center gap-4 flex-wrap">
                   <h1>
                     Showing{" "}

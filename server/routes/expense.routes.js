@@ -1,5 +1,11 @@
 const express = require("express");
-const { allListByUserId, createExpense, getExpenseById, updateExpense, deleteExpense } = require("../controllers/expense.controller.js");
+const {
+  allListByUserId,
+  createExpense,
+  getExpenseById,
+  updateExpense,
+  deleteExpense,
+} = require("../controllers/expense.controller.js");
 const router = express.Router();
 
 const { protect } = require("../middleware/auth.middleware.js");
