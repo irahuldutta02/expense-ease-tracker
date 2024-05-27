@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   FaAngleLeft,
   FaAngleRight,
@@ -23,6 +23,7 @@ import { useGetPartiesQuery } from "../redux/partyApiSlice";
 import { convertTo12HourTime } from "../utils/convertTo12HourTime";
 import { convertToReadableDateString } from "../utils/convertToReadableDateString";
 import { roundToTwoDecimalPlaces } from "../utils/roundToTwoDecimalPlaces";
+import { ConfirmationModelContext } from "../context/ContextProvider";
 
 export const Expenses = () => {
   const { data, isLoading, isError, refetch } = useGetExpensesQuery();
@@ -89,6 +90,8 @@ export const Expenses = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
+
+  const { openConfirmationModel } = useContext(ConfirmationModelContext);
 
   // filter by search term
   let filteredExpenses = expenses.filter((expense) => {
@@ -239,12 +242,7 @@ export const Expenses = () => {
     }
   };
 
-  const handleEditExpense = async () => {
-    // confirmation alert
-    if (!window.confirm("Are you sure you want to update this expense?")) {
-      return;
-    }
-
+  const editExpenseApiHandler = async () => {
     const expense = {
       Date: dateTime,
       Cash_In: expenseType === "cash_in" ? amount : null,
@@ -266,12 +264,21 @@ export const Expenses = () => {
     }
   };
 
-  const handleDeleteExpense = async (id) => {
-    // confirmation alert
-    if (!window.confirm("Are you sure you want to delete this expense?")) {
-      return;
-    }
+  const handleEditExpense = () => {
+    openConfirmationModel({
+      question: "Are you sure you want to Edit this expense?",
+      answer: ["Yes", "No"],
+      onClose: (result) => {
+        if (result) {
+          editExpenseApiHandler();
+        } else {
+          return;
+        }
+      },
+    });
+  };
 
+  const deleteExpenseApiHandler = async (id) => {
     try {
       const res = await deleteExpense(id);
       if (res?.data?.status === 200) {
@@ -282,6 +289,20 @@ export const Expenses = () => {
       console.error("Error deleting expense", error);
       toast.error("Error deleting expense");
     }
+  };
+
+  const handleDeleteExpense = (id) => {
+    openConfirmationModel({
+      question: "Are you sure you want to delete this expense?",
+      answer: ["Yes", "No"],
+      onClose: (result) => {
+        if (result) {
+          deleteExpenseApiHandler(id);
+        } else {
+          return;
+        }
+      },
+    });
   };
 
   const handleDuplicate = (expense) => {

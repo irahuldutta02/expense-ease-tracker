@@ -4,6 +4,7 @@ import "./App.css";
 import { MainRoutes } from "./Routes/MainRoutes";
 import { ThemeContext } from "./context/ContextProvider";
 import { useContext } from "react";
+import { ConfirmationModal } from "./components/ConfirmationModal";
 
 function App() {
   const { theme } = useContext(ThemeContext);
@@ -20,6 +21,7 @@ function App() {
           pauseOnHover
           theme="colored"
         />
+        <ConfirmationModal />
       </div>
     </>
   );

@@ -1,6 +1,7 @@
 import { createContext, useState } from "react";
 
 export const ThemeContext = createContext();
+export const ConfirmationModelContext = createContext();
 
 export const ContextProvider = ({ children }) => {
   const getThemeFromLocalStorage = localStorage.getItem("theme");
@@ -18,10 +19,40 @@ export const ContextProvider = ({ children }) => {
     }
   };
 
+  const [confirmationModel, setConfirmationModel] = useState(false);
+  const [confirmationModelData, setConfirmationModelData] = useState(null);
+
+  const openConfirmationModel = (
+    data = {
+      question: "Are you sure ?",
+      answer: ["Yes", "No"],
+    }
+  ) => {
+    setConfirmationModelData(data);
+    setConfirmationModel(true);
+  };
+
+  const closeConfirmationModel = () => {
+    setConfirmationModelData({
+      question: "Are you sure ?",
+      answer: ["Yes", "No"],
+    });
+    setConfirmationModel(false);
+  };
+
   return (
     <>
       <ThemeContext.Provider value={{ theme, toggleTheme }}>
-        {children}
+        <ConfirmationModelContext.Provider
+          value={{
+            confirmationModel,
+            confirmationModelData,
+            openConfirmationModel,
+            closeConfirmationModel,
+          }}
+        >
+          {children}
+        </ConfirmationModelContext.Provider>
       </ThemeContext.Provider>
     </>
   );
