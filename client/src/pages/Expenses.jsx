@@ -9,8 +9,14 @@ import {
   FaSearch,
 } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
+import { toast } from "react-toastify";
 import { useGetCategoriesQuery } from "../redux/categoryApiSlice";
-import { useGetExpensesQuery } from "../redux/expenseApiSlice";
+import {
+  useCreateExpenseMutation,
+  useDeleteExpenseMutation,
+  useGetExpensesQuery,
+  useUpdateExpenseMutation,
+} from "../redux/expenseApiSlice";
 import { useGetModesQuery } from "../redux/modeApiSlice";
 import { useGetPartiesQuery } from "../redux/partyApiSlice";
 import { convertTo12HourTime } from "../utils/convertTo12HourTime";
@@ -40,6 +46,13 @@ export const Expenses = () => {
     refetch: partiesRefetch,
   } = useGetPartiesQuery();
   const parties = partiesData?.data || [];
+
+  const [createExpense, { isLoading: isCreatingExpense }] =
+    useCreateExpenseMutation();
+  const [updateExpense, { isLoading: isUpdatingExpense }] =
+    useUpdateExpenseMutation();
+  const [deleteExpense, { isLoading: isDeletingExpense }] =
+    useDeleteExpenseMutation();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [range, setRange] = useState("default");
@@ -119,6 +132,114 @@ export const Expenses = () => {
     setEditId(null);
   };
 
+  const resetHandler = () => {
+    setSearchTerm("");
+    setRange("default");
+    setFromDate("");
+    setToDate("");
+    refetch();
+    modesRefetch();
+    categoriesRefetch();
+    partiesRefetch();
+  };
+
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "instant",
+      });
+    }, 1);
+  };
+
+  const handleModalClose = () => {
+    handleCancelEditing();
+    setAddExpenseModal(false);
+    setExpenseType(null);
+    refetch();
+    modesRefetch();
+    categoriesRefetch();
+    partiesRefetch();
+    handleResetForm();
+  };
+
+  const handleResetForm = () => {
+    setDateTime(new Date(Date.now()).toISOString().slice(0, 16));
+    setAmount("");
+    setParty("none");
+    setCategory("none");
+    setMode("none");
+    setRemark("");
+  };
+
+  const handleSaveExpense = async () => {
+    const expense = {
+      Date: dateTime,
+      Cash_In: expenseType === "cash_in" ? amount : null,
+      Cash_Out: expenseType === "cash_out" ? amount : null,
+      Party: party === "none" ? null : party,
+      Category: category === "none" ? null : category,
+      Mode: mode === "none" ? null : mode,
+      Remark: remark,
+    };
+    try {
+      const res = await createExpense(expense);
+      if (res?.data?.status === 201) {
+        toast.success("Expense created successfully");
+        handleModalClose();
+      }
+    } catch (error) {
+      console.error("Error creating expense", error);
+      toast.error("Error creating expense");
+    }
+  };
+
+  const handleEditExpense = async () => {
+    // confirmation alert
+    if (!window.confirm("Are you sure you want to update this expense?")) {
+      return;
+    }
+
+    const expense = {
+      Date: dateTime,
+      Cash_In: expenseType === "cash_in" ? amount : null,
+      Cash_Out: expenseType === "cash_out" ? amount : null,
+      Party: party === "none" ? null : party,
+      Category: category === "none" ? null : category,
+      Mode: mode === "none" ? null : mode,
+      Remark: remark,
+    };
+    try {
+      const res = await updateExpense({ id: editId, data: expense });
+      if (res?.data?.status === 200) {
+        toast.success("Expense updated successfully");
+        handleModalClose();
+      }
+    } catch (error) {
+      console.error("Error updating expense", error);
+      toast.error("Error updating expense");
+    }
+  };
+
+  const handleDeleteExpense = async (id) => {
+    // confirmation alert
+    if (!window.confirm("Are you sure you want to delete this expense?")) {
+      return;
+    }
+
+    try {
+      const res = await deleteExpense(id);
+      if (res?.data?.status === 200) {
+        toast.success("Expense deleted successfully");
+        handleModalClose();
+      }
+    } catch (error) {
+      console.error("Error deleting expense", error);
+      toast.error("Error deleting expense");
+    }
+  };
+
+  // render the table
   const renderTable = () => {
     const start = (currentPage - 1) * rowsPerPage;
     const end = start + rowsPerPage;
@@ -180,10 +301,13 @@ export const Expenses = () => {
               <FaEdit size={20} />
             </button>
             <button
-              className=" text-red-500 font-bold  rounded hover:transform hover:scale-125 transition duration-300 ease-in-out"
+              className={`text-red-500 font-bold  rounded hover:transform hover:scale-125 transition duration-300 ease-in-out ${
+                isDeletingExpense && "opacity-50 cursor-not-allowed"
+              }`}
+              disabled={isDeletingExpense}
               onClick={(e) => {
                 e.stopPropagation();
-                console.log("delete", expense?._id);
+                handleDeleteExpense(expense?._id);
               }}
             >
               <MdDelete size={20} />
@@ -192,68 +316,6 @@ export const Expenses = () => {
         </td>
       </tr>
     ));
-  };
-
-  const resetHandler = () => {
-    setSearchTerm("");
-    setRange("default");
-    setFromDate("");
-    setToDate("");
-    refetch();
-    modesRefetch();
-    categoriesRefetch();
-    partiesRefetch();
-  };
-
-  const scrollToBottom = () => {
-    setTimeout(() => {
-      window.scrollTo({
-        top: document.documentElement.scrollHeight,
-        behavior: "instant",
-      });
-    }, 1);
-  };
-
-  const handleModalClose = () => {
-    handleCancelEditing();
-    setAddExpenseModal(false);
-    setExpenseType(null);
-    handleResetForm();
-  };
-
-  const handleResetForm = () => {
-    setDateTime(new Date(Date.now()).toISOString().slice(0, 16));
-    setAmount("");
-    setParty("none");
-    setCategory("none");
-    setMode("none");
-    setRemark("");
-  };
-
-  const handleSaveExpense = () => {
-    const expense = {
-      Date: dateTime,
-      Cash_In: expenseType === "cash_in" ? amount : null,
-      Cash_Out: expenseType === "cash_out" ? amount : null,
-      Party: party === "none" ? null : party,
-      Category: category === "none" ? null : category,
-      Mode: mode === "none" ? null : mode,
-      Remark: remark,
-    };
-    console.log("save expense", { expense });
-  };
-
-  const handleEditExpense = () => {
-    const expense = {
-      Date: dateTime,
-      Cash_In: expenseType === "cash_in" ? amount : null,
-      Cash_Out: expenseType === "cash_out" ? amount : null,
-      Party: party === "none" ? null : party,
-      Category: category === "none" ? null : category,
-      Mode: mode === "none" ? null : mode,
-      Remark: remark,
-    };
-    console.log("edit expense", { expense, editId });
   };
 
   useEffect(() => {
@@ -824,7 +886,11 @@ export const Expenses = () => {
                               {!isEditing && (
                                 <button
                                   type="submit"
-                                  className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                                  className={`text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 ${
+                                    isCreatingExpense &&
+                                    "opacity-50 cursor-not-allowed"
+                                  }`}
+                                  disabled={isCreatingExpense}
                                   onClick={(e) => {
                                     e.preventDefault();
                                     handleSaveExpense();
@@ -837,7 +903,11 @@ export const Expenses = () => {
                               {isEditing && (
                                 <button
                                   type="submit"
-                                  className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                                  className={`text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 ${
+                                    isUpdatingExpense &&
+                                    "opacity-50 cursor-not-allowed"
+                                  }`}
+                                  disabled={isUpdatingExpense}
                                   onClick={(e) => {
                                     e.preventDefault();
                                     handleEditExpense();
