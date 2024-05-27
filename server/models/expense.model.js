@@ -10,7 +10,7 @@ const expenseSchema = new Schema(
     },
     Remark: {
       type: String,
-      required: true,
+      required: false,
     },
     UserId: {
       type: Schema.Types.ObjectId,
