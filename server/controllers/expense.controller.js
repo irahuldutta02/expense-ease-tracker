@@ -39,8 +39,6 @@ const createExpense = asyncHandler(async (req, res) => {
       Remark,
     } = req.body;
 
-    console.log(req.body);
-
     const UserId = req.user._id;
 
     const expense = new Expense({
@@ -127,8 +125,6 @@ const getExpenseById = asyncHandler(async (req, res) => {
   try {
     const UserId = req.user._id;
 
-    console.log(req.params.id);
-
     const expense = await Expense.findById(req.params.id)
       .populate("Mode")
       .populate("Category")
@@ -165,8 +161,6 @@ const deleteExpense = asyncHandler(async (req, res) => {
     const UserId = req.user._id;
 
     const expense = await Expense.findById(req.params.id);
-
-    console.log(expense);
 
     if (!expense) {
       res.status(404);
