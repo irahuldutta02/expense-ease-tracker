@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import {
   FaAngleLeft,
   FaAngleRight,
-  FaEdit,
+  FaCopy,
   FaEquals,
   FaMinus,
   FaPlus,
   FaSearch,
+  FaTimes,
 } from "react-icons/fa";
-import { MdDelete } from "react-icons/md";
+import { MdDelete, MdEditSquare } from "react-icons/md";
 import { toast } from "react-toastify";
 import { useGetCategoriesQuery } from "../redux/categoryApiSlice";
 import {
@@ -25,6 +26,7 @@ import { roundToTwoDecimalPlaces } from "../utils/roundToTwoDecimalPlaces";
 
 export const Expenses = () => {
   const { data, isLoading, isError, refetch } = useGetExpensesQuery();
+  const expenses = data?.data || [];
   const {
     data: modesData,
     isLoading: modesIsLoading,
@@ -73,17 +75,23 @@ export const Expenses = () => {
   const [mode, setMode] = useState("none");
   const [remark, setRemark] = useState("");
 
+  const [partyFilter, setPartyFilter] = useState([]);
+  const [categoryFilter, setCategoryFilter] = useState([]);
+  const [modeFilter, setModeFilter] = useState([]);
+
+  const [partyModalOpen, setPartyModalOpen] = useState(false);
+  const [categoryModalOpen, setCategoryModalOpen] = useState(false);
+  const [modeModalOpen, setModeModalOpen] = useState(false);
+
+  const [partySearchTerm, setPartySearchTerm] = useState("");
+  const [categorySearchTerm, setCategorySearchTerm] = useState("");
+  const [modeSearchTerm, setModeSearchTerm] = useState("");
+
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
 
-  const expenses = data?.data || [];
-  const formattedData = expenses.map((expense) => {
-    return {
-      ...expense,
-      balance: 0.0,
-    };
-  });
-  let filteredExpenses = formattedData.filter((expense) => {
+  // filter by search term
+  let filteredExpenses = expenses.filter((expense) => {
     if (searchTerm.trim() === "") {
       return expense;
     }
@@ -93,6 +101,7 @@ export const Expenses = () => {
     }
   });
 
+  // filter by date
   filteredExpenses = filteredExpenses.filter((expense) => {
     if (fromDate === "" || toDate === "") {
       return expense;
@@ -104,6 +113,39 @@ export const Expenses = () => {
     const to = new Date(toDate).toISOString().split("T")[0];
 
     return expenseDate >= from && expenseDate <= to;
+  });
+
+  // filter by party
+  filteredExpenses = filteredExpenses.filter((expense) => {
+    if (partyFilter.length === 0) {
+      return expense;
+    }
+
+    if (partyFilter.includes(expense?.Party?._id)) {
+      return expense;
+    }
+  });
+
+  // filter by category
+  filteredExpenses = filteredExpenses.filter((expense) => {
+    if (categoryFilter.length === 0) {
+      return expense;
+    }
+
+    if (categoryFilter.includes(expense?.Category?._id)) {
+      return expense;
+    }
+  });
+
+  // filter by mode
+  filteredExpenses = filteredExpenses.filter((expense) => {
+    if (modeFilter.length === 0) {
+      return expense;
+    }
+
+    if (modeFilter.includes(expense?.Mode?._id)) {
+      return expense;
+    }
   });
 
   const totalCashIn = filteredExpenses.reduce((acc, expense) => {
@@ -137,6 +179,9 @@ export const Expenses = () => {
     setRange("default");
     setFromDate("");
     setToDate("");
+    setPartyFilter([]);
+    setCategoryFilter([]);
+    setModeFilter([]);
     refetch();
     modesRefetch();
     categoriesRefetch();
@@ -239,6 +284,19 @@ export const Expenses = () => {
     }
   };
 
+  const handleDuplicate = (expense) => {
+    setIsEditing(false);
+    setEditId(null);
+    setExpenseType(expense?.Cash_In ? "cash_in" : "cash_out");
+    setDateTime(expense?.Date);
+    setAmount(expense?.Cash_In || expense?.Cash_Out);
+    setParty(expense?.Party?._id || "none");
+    setCategory(expense?.Category?._id || "none");
+    setMode(expense?.Mode?._id || "none");
+    setRemark(expense?.Remark);
+    setAddExpenseModal(true);
+  };
+
   // render the table
   const renderTable = () => {
     const start = (currentPage - 1) * rowsPerPage;
@@ -246,7 +304,7 @@ export const Expenses = () => {
 
     if (filteredExpenses?.slice(start, end).length === 0) {
       return (
-        <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+        <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 cursor-pointer">
           <td
             scope="row"
             className="px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
@@ -270,38 +328,57 @@ export const Expenses = () => {
       >
         <td
           scope="row"
-          className="px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
+          className="px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white border-r border-gray-300 dark:border-gray-700"
         >
           {convertToReadableDateString(expense?.Date)} <br />
           {convertTo12HourTime(expense?.Date)}
         </td>
-        <td className="px-6 py-4">{expense?.Remark}</td>
-        <td className="px-6 py-4">{expense?.Party?.Name}</td>
-        <td className="px-6 py-4">{expense?.Category?.Name}</td>
-        <td className="px-6 py-4">{expense?.Mode?.Name}</td>
-        <td className="px-6 py-4">
+        <td className="px-6 py-4 border-r border-gray-300 dark:border-gray-700">
+          {expense?.Remark}
+        </td>
+        <td className="px-6 py-4 border-r border-gray-300 dark:border-gray-700">
+          {expense?.Party?.Name}
+        </td>
+        <td className="px-6 py-4 border-r border-gray-300 dark:border-gray-700">
+          {expense?.Category?.Name}
+        </td>
+        <td className="px-6 py-4 border-r border-gray-300 dark:border-gray-700">
+          {expense?.Mode?.Name}
+        </td>
+        <td className="px-6 py-4 border-r border-gray-300 dark:border-gray-700">
           <div className="w-24">
             ₹{" "}
             <span className="text-green-500 font-bold">{expense?.Cash_In}</span>
             <span className="text-red-500 font-bold">{expense?.Cash_Out}</span>
           </div>
         </td>
-        <td className="px-6 py-4">
-          <div className="w-24">₹ {expense?.balance}</div>
+        <td className="px-6 py-4 border-r border-gray-300 dark:border-gray-700">
+          <div className="w-24">
+            ₹ {roundToTwoDecimalPlaces(expense?.balance)}
+          </div>
         </td>
         <td className="px-6 py-4">
           <div className="flex justify-center items-center gap-4">
             <button
-              className=" text-blue-400 font-bold  rounded hover:transform hover:scale-125 transition duration-300 ease-in-out"
+              className="text-blue-400 font-bold rounded hover:transform hover:scale-125 transition duration-300 ease-in-out"
               onClick={(e) => {
                 e.stopPropagation();
                 handleEditing(expense);
               }}
             >
-              <FaEdit size={20} />
+              <MdEditSquare size={20} />
             </button>
             <button
-              className={`text-red-500 font-bold  rounded hover:transform hover:scale-125 transition duration-300 ease-in-out ${
+              className="text-blue-400 font-bold rounded hover:transform hover:scale-125 transition duration-300 ease-in-out"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDuplicate(expense);
+              }}
+            >
+              <FaCopy size={18} />
+            </button>
+            <button
+              className={`text-red-500 font-bold rounded hover:transform hover:scale-125 transition duration-300 ease-in-out ${
                 isDeletingExpense && "opacity-50 cursor-not-allowed"
               }`}
               disabled={isDeletingExpense}
@@ -318,6 +395,7 @@ export const Expenses = () => {
     ));
   };
 
+  // for date range filter
   useEffect(() => {
     if (range === "default") {
       setFromDate("");
@@ -357,6 +435,7 @@ export const Expenses = () => {
     setToDate(toDate);
   }, [range]);
 
+  // for hiding the body overflow when modal is open
   useEffect(() => {
     if (addExpenseModal) {
       document.body.style.overflow = "hidden";
@@ -364,6 +443,108 @@ export const Expenses = () => {
       document.body.style.overflow = "auto";
     }
   }, [addExpenseModal]);
+
+  // to close all modals when click outside other than the modal
+  useEffect(() => {
+    const closeModals = (e) => {
+      // close party modal if not clicking on the party modal
+      if (
+        partyModalOpen &&
+        !document.getElementById("partyFilter").contains(e.target)
+      ) {
+        setPartyModalOpen(false);
+      }
+
+      // close category modal if not clicking on the category modal
+      if (
+        categoryModalOpen &&
+        !document.getElementById("categoryFilter").contains(e.target)
+      ) {
+        setCategoryModalOpen(false);
+      }
+
+      // close mode modal if not clicking on the mode modal
+      if (
+        modeModalOpen &&
+        !document.getElementById("modeFilter").contains(e.target)
+      ) {
+        setModeModalOpen(false);
+      }
+    };
+    window.addEventListener("click", closeModals);
+    return () => window.removeEventListener("click", closeModals);
+  }, [categoryModalOpen, modeModalOpen, partyModalOpen]);
+
+  const filteredParties = parties.filter((party) => {
+    if (partySearchTerm.trim() === "") {
+      return party;
+    }
+
+    if (party?.Name.toLowerCase().includes(partySearchTerm.toLowerCase())) {
+      return party;
+    }
+  });
+
+  const filteredCategories = categories.filter((category) => {
+    if (categorySearchTerm.trim() === "") {
+      return category;
+    }
+
+    if (
+      category?.Name.toLowerCase().includes(categorySearchTerm.toLowerCase())
+    ) {
+      return category;
+    }
+  });
+
+  const filteredModes = modes.filter((mode) => {
+    if (modeSearchTerm.trim() === "") {
+      return mode;
+    }
+
+    if (mode?.Name.toLowerCase().includes(modeSearchTerm.toLowerCase())) {
+      return mode;
+    }
+  });
+
+  const handlePartyModelClear = () => {
+    setPartyFilter([]);
+  };
+
+  const handlePartyModalDone = () => {
+    handlePartyModalClose();
+  };
+
+  const handlePartyModalClose = () => {
+    setPartySearchTerm("");
+    setPartyModalOpen(false);
+  };
+
+  const handleCategoryModelClear = () => {
+    setCategoryFilter([]);
+  };
+
+  const handleCategoryModalDone = () => {
+    handleCategoryModalClose();
+  };
+
+  const handleCategoryModalClose = () => {
+    setCategorySearchTerm("");
+    setCategoryModalOpen(false);
+  };
+
+  const handleModeModelClear = () => {
+    setModeFilter([]);
+  };
+
+  const handleModeModalDone = () => {
+    handleModeModalClose();
+  };
+
+  const handleModeModalClose = () => {
+    setModeSearchTerm("");
+    setModeModalOpen(false);
+  };
 
   return (
     <>
@@ -392,6 +573,319 @@ export const Expenses = () => {
           )}
           {!isLoading && (
             <>
+              {/* category, mode, party filter */}
+              <div className="flex justify-between w-full items-center py-4 gap-4 flex-wrap">
+                {/* party filter */}
+                <div
+                  id="partyFilter"
+                  className="flex justify-end items-start flex-col gap-2 flex-1 min-w-48 min-h-20 relative cursor-pointer"
+                >
+                  <label
+                    htmlFor="formDate"
+                    className="text-sm font-semibold text-gray-900 dark:text-white"
+                  >
+                    Filter By Party
+                  </label>
+                  <div
+                    className={`bg-gray-50 border  text-gray-900 text-sm rounded-lg block w-full ps-10 dark:bg-gray-700  dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500  pl-0 ${
+                      partyFilter.length > 0
+                        ? "border-blue-500"
+                        : "border-gray-300 dark:border-gray-600"
+                    }`}
+                    onClick={() => setPartyModalOpen(true)}
+                  >
+                    <div
+                      className={`p-2.5 ${
+                        partyFilter.length > 0
+                          ? "text-blue-500 font-bold"
+                          : "text-gray-900 dark:text-white"
+                      }`}
+                    >
+                      Parties:{" "}
+                      {partyFilter.length > 0
+                        ? `${partyFilter.length} Selected`
+                        : "All"}
+                    </div>
+                  </div>
+
+                  {/* party modal */}
+                  {partyModalOpen && (
+                    <div className="absolute w-full top-24 flex justify-center items-center flex-col gap-4 bg-gray-50 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white z-20">
+                      {/* header */}
+                      <div className="w-full pt-4 px-4">
+                        <input
+                          type="text"
+                          id="small-input"
+                          className="block w-full p-2 text-gray-900 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 border border-blue-500  focus:border-blue-500 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white outline-none"
+                          placeholder="Search Party"
+                          value={partySearchTerm}
+                          onChange={(e) => setPartySearchTerm(e.target.value)}
+                        />
+                      </div>
+                      <hr className="w-full" />
+                      {/* body */}
+                      <div className="w-full flex flex-col gap-2 px-4 max-h-60 overflow-y-auto">
+                        {filteredParties.map((party) => (
+                          <div
+                            key={party?._id}
+                            className="flex items-center w-full"
+                          >
+                            <input
+                              id={party?._id}
+                              type="checkbox"
+                              value={party?._id}
+                              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
+                              checked={partyFilter.includes(party?._id)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setPartyFilter([...partyFilter, party?._id]);
+                                }
+                                if (!e.target.checked) {
+                                  setPartyFilter(
+                                    partyFilter.filter(
+                                      (id) => id !== party?._id
+                                    )
+                                  );
+                                }
+                              }}
+                            />
+                            <label
+                              htmlFor={party?._id}
+                              className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                            >
+                              {party?.Name}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                      <hr className="w-full" />
+                      {/* footer */}
+                      <div className="w-full px-4 pb-4 flex justify-end items-center gap-4">
+                        <button
+                          className="font-bold text-gray-400"
+                          onClick={handlePartyModelClear}
+                        >
+                          Clear
+                        </button>
+                        <button
+                          className="font-bold text-blue-500"
+                          onClick={handlePartyModalDone}
+                        >
+                          Done
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                {/* category filter */}
+                <div
+                  id="categoryFilter"
+                  className="flex justify-end items-start flex-col gap-2 flex-1 min-w-48 min-h-20 relative cursor-pointer"
+                >
+                  <label
+                    htmlFor="formDate"
+                    className="text-sm font-semibold text-gray-900 dark:text-white"
+                  >
+                    Filter By Category
+                  </label>
+                  <div
+                    className={`bg-gray-50 border  text-gray-900 text-sm rounded-lg block w-full ps-10 dark:bg-gray-700  dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500  pl-0 ${
+                      categoryFilter.length > 0
+                        ? "border-blue-500"
+                        : "border-gray-300 dark:border-gray-600"
+                    }`}
+                    onClick={() => setCategoryModalOpen(true)}
+                  >
+                    <div
+                      className={`p-2.5 ${
+                        categoryFilter.length > 0
+                          ? "text-blue-500 font-bold"
+                          : "text-gray-900 dark:text-white"
+                      }`}
+                    >
+                      Categories:{" "}
+                      {categoryFilter.length > 0
+                        ? `${categoryFilter.length} Selected`
+                        : "All"}
+                    </div>
+                  </div>
+
+                  {/* category modal */}
+                  {categoryModalOpen && (
+                    <div className="absolute w-full top-24 flex justify-center items-center flex-col gap-4 bg-gray-50 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white z-20">
+                      {/* header */}
+                      <div className="w-full pt-4 px-4">
+                        <input
+                          type="text"
+                          id="small-input"
+                          className="block w-full p-2 text-gray-900 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 border border-blue-500  focus:border-blue-500 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white outline-none"
+                          placeholder="Search Party"
+                          value={categorySearchTerm}
+                          onChange={(e) =>
+                            setCategorySearchTerm(e.target.value)
+                          }
+                        />
+                      </div>
+                      <hr className="w-full" />
+                      {/* body */}
+                      <div className="w-full flex flex-col gap-2 px-4 max-h-60 overflow-y-auto">
+                        {filteredCategories.map((category) => (
+                          <div
+                            key={category?._id}
+                            className="flex items-center w-full"
+                          >
+                            <input
+                              id={category._id}
+                              type="checkbox"
+                              value={category._id}
+                              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
+                              checked={categoryFilter.includes(category._id)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setCategoryFilter([
+                                    ...categoryFilter,
+                                    category._id,
+                                  ]);
+                                }
+                                if (!e.target.checked) {
+                                  setCategoryFilter(
+                                    categoryFilter.filter(
+                                      (id) => id !== category._id
+                                    )
+                                  );
+                                }
+                              }}
+                            />
+                            <label
+                              htmlFor={category._id}
+                              className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                            >
+                              {category.Name}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                      <hr className="w-full" />
+                      {/* footer */}
+                      <div className="w-full px-4 pb-4 flex justify-end items-center gap-4">
+                        <button
+                          className="font-bold text-gray-400"
+                          onClick={handleCategoryModelClear}
+                        >
+                          Clear
+                        </button>
+                        <button
+                          className="font-bold text-blue-500"
+                          onClick={handleCategoryModalDone}
+                        >
+                          Done
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                {/* mode filter */}
+                <div
+                  id="modeFilter"
+                  className="flex justify-end items-start flex-col gap-2 flex-1 min-w-48 min-h-20 relative cursor-pointer"
+                >
+                  <label
+                    htmlFor="formDate"
+                    className="text-sm font-semibold text-gray-900 dark:text-white"
+                  >
+                    Filter By Mode
+                  </label>
+
+                  <div
+                    className={`bg-gray-50 border  text-gray-900 text-sm rounded-lg block w-full ps-10 dark:bg-gray-700  dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500  pl-0 ${
+                      modeFilter.length > 0
+                        ? "border-blue-500"
+                        : "border-gray-300 dark:border-gray-600"
+                    }`}
+                    onClick={() => setModeModalOpen(true)}
+                  >
+                    <div
+                      className={`p-2.5 ${
+                        modeFilter.length > 0
+                          ? "text-blue-500 font-bold"
+                          : "text-gray-900 dark:text-white"
+                      }`}
+                    >
+                      Modes:{" "}
+                      {modeFilter.length > 0
+                        ? `${modeFilter.length} Selected`
+                        : "All"}
+                    </div>
+                  </div>
+
+                  {/* mode modal */}
+                  {modeModalOpen && (
+                    <div className="absolute w-full top-24 flex justify-center items-center flex-col gap-4 bg-gray-50 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white z-20">
+                      {/* header */}
+                      <div className="w-full pt-4 px-4">
+                        <input
+                          type="text"
+                          id="small-input"
+                          className="block w-full p-2 text-gray-900 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 border border-blue-500  focus:border-blue-500 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white outline-none"
+                          placeholder="Search Party"
+                          value={modeSearchTerm}
+                          onChange={(e) => setModeSearchTerm(e.target.value)}
+                        />
+                      </div>
+                      <hr className="w-full" />
+                      {/* body */}
+                      <div className="w-full flex flex-col gap-2 px-4 max-h-60 overflow-y-auto">
+                        {filteredModes.map((mode) => (
+                          <div
+                            key={mode?._id}
+                            className="flex items-center w-full"
+                          >
+                            <input
+                              id={mode._id}
+                              type="checkbox"
+                              value={mode._id}
+                              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
+                              checked={modeFilter.includes(mode._id)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setModeFilter([...modeFilter, mode._id]);
+                                }
+                                if (!e.target.checked) {
+                                  setModeFilter(
+                                    modeFilter.filter((id) => id !== mode._id)
+                                  );
+                                }
+                              }}
+                            />
+                            <label
+                              htmlFor={mode._id}
+                              className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                            >
+                              {mode.Name}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                      <hr className="w-full" />
+                      {/* footer */}
+                      <div className="w-full px-4 pb-4 flex justify-end items-center gap-4">
+                        <button
+                          className="font-bold text-gray-400"
+                          onClick={handleModeModelClear}
+                        >
+                          Clear
+                        </button>
+                        <button
+                          className="font-bold text-blue-500"
+                          onClick={handleModeModalDone}
+                        >
+                          Done
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
               {/* date filter */}
               <div className="flex justify-between w-full items-center py-4 gap-4 flex-wrap">
                 {/* start date */}
@@ -543,32 +1037,32 @@ export const Expenses = () => {
                     <span className="text-blue-500">{expenses.length}</span>{" "}
                   </h1>
                 </div>
-                <div className="relative overflow-x-auto shadow-md rounded-lg w-full">
+                <div className="relative overflow-x-auto shadow-md w-full rounded-t-lg">
                   <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                       <tr>
-                        <th scope="col" className="px-6 py-3">
+                        <th scope="col" className="px-6 py-3 text-center">
                           Date & Time
                         </th>
-                        <th scope="col" className="px-6 py-3">
+                        <th scope="col" className="px-6 py-3 text-center">
                           Detail
                         </th>
-                        <th scope="col" className="px-6 py-3">
+                        <th scope="col" className="px-6 py-3 text-center">
                           Party
                         </th>
-                        <th scope="col" className="px-6 py-3">
+                        <th scope="col" className="px-6 py-3 text-center">
                           Category
                         </th>
-                        <th scope="col" className="px-6 py-3">
+                        <th scope="col" className="px-6 py-3 text-center">
                           Mode
                         </th>
-                        <th scope="col" className="px-6 py-3">
+                        <th scope="col" className="px-6 py-3 text-center">
                           Amount
                         </th>
-                        <th scope="col" className="px-6 py-3">
+                        <th scope="col" className="px-6 py-3 text-center">
                           Balance
                         </th>
-                        <th scope="col" className="px-6 py-3">
+                        <th scope="col" className="px-6 py-3 text-center">
                           Actions
                         </th>
                       </tr>
@@ -577,7 +1071,7 @@ export const Expenses = () => {
                       {!isError && renderTable()}
 
                       {isError && (
-                        <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                        <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 cursor-pointer">
                           <td
                             scope="row"
                             className="px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
@@ -688,21 +1182,7 @@ export const Expenses = () => {
                                 data-modal-hide="editUserModal"
                                 onClick={handleModalClose}
                               >
-                                <svg
-                                  className="w-3 h-3"
-                                  aria-hidden="true"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  fill="none"
-                                  viewBox="0 0 14 14"
-                                >
-                                  <path
-                                    stroke="currentColor"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-                                  />
-                                </svg>
+                                <FaTimes size={20} />
                                 <span className="sr-only">Close modal</span>
                               </button>
                             </div>
