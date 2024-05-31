@@ -1,10 +1,10 @@
+import { BiSolidCategory, BiSolidCategoryAlt } from "react-icons/bi";
 import { FaMoneyBill, FaSignOutAlt } from "react-icons/fa";
-import { MdSpaceDashboard } from "react-icons/md";
-import { NavLink } from "react-router-dom";
-import { useLogoutMutation } from "../redux/userApiSlice";
-import { toast } from "react-toastify";
+import { FaChartSimple, FaUserGroup } from "react-icons/fa6";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useLogoutMutation } from "../redux/userApiSlice";
 import { logout } from "../redux/userSlice";
 
 export const DashboardSidebar = ({ sidebarOpen, onSidebarClose }) => {
@@ -40,20 +40,6 @@ export const DashboardSidebar = ({ sidebarOpen, onSidebarClose }) => {
             <ul className="space-y-2 font-medium">
               <li>
                 <NavLink
-                  to={"/dashboard/charts"}
-                  className={({ isActive }) =>
-                    `flex items-center p-2 text-sm text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group ${
-                      isActive ? "bg-gray-200 dark:bg-gray-900" : ""
-                    }`
-                  }
-                  onClick={onSidebarClose}
-                >
-                  <MdSpaceDashboard size={20} />
-                  <span className="ms-3">Dashboard</span>
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
                   to={"/dashboard/expenses"}
                   className={({ isActive }) =>
                     `flex items-center p-2 text-sm text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group ${
@@ -64,6 +50,62 @@ export const DashboardSidebar = ({ sidebarOpen, onSidebarClose }) => {
                 >
                   <FaMoneyBill size={20} />
                   <span className="ms-3">Expenses</span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to={"/dashboard/charts"}
+                  className={({ isActive }) =>
+                    `flex items-center p-2 text-sm text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group ${
+                      isActive ? "bg-gray-200 dark:bg-gray-900" : ""
+                    }`
+                  }
+                  onClick={onSidebarClose}
+                >
+                  <FaChartSimple size={20} />
+                  <span className="ms-3">Charts</span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to={"/dashboard/categories"}
+                  className={({ isActive }) =>
+                    `flex items-center p-2 text-sm text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group ${
+                      isActive ? "bg-gray-200 dark:bg-gray-900" : ""
+                    }`
+                  }
+                  onClick={onSidebarClose}
+                >
+                  <BiSolidCategoryAlt size={20} />
+                  <span className="ms-3">Categories</span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to={"/dashboard/modes"}
+                  className={({ isActive }) =>
+                    `flex items-center p-2 text-sm text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group ${
+                      isActive ? "bg-gray-200 dark:bg-gray-900" : ""
+                    }`
+                  }
+                  onClick={onSidebarClose}
+                >
+                  <BiSolidCategory size={20} />
+                  <span className="ms-3">Modes</span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to={"/dashboard/parties"}
+                  className={({ isActive }) =>
+                    `flex items-center p-2 text-sm text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group ${
+                      isActive ? "bg-gray-200 dark:bg-gray-900" : ""
+                    }`
+                  }
+                  onClick={onSidebarClose}
+                >
+                  <FaUserGroup size={20} />
+                  <span className="ms-3">Parties</span>
                 </NavLink>
               </li>
               <li>

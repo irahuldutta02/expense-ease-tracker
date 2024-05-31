@@ -8,6 +8,9 @@ import { SignIn } from "../pages/SignIn";
 import { SignUp } from "../pages/SignUp";
 import { useSelector } from "react-redux";
 import { Expenses } from "../pages/Expenses";
+import { Categories } from "../pages/Categories";
+import { Modes } from "../pages/Modes";
+import { Parties } from "../pages/Parties";
 
 export const MainRoutes = () => {
   const { userInfo } = useSelector((state) => state.user);
@@ -25,9 +28,12 @@ export const MainRoutes = () => {
       path: "/dashboard",
       element: <DashboardLayout />,
       children: [
-        { path: "", element: <Navigate to="/dashboard/charts" replace /> },
+        { path: "", element: <Navigate to="/dashboard/expenses" replace /> },
         { path: "charts", element: <Charts /> },
         { path: "expenses", element: <Expenses /> },
+        { path: "parties", element: <Parties /> },
+        { path: "modes", element: <Modes /> },
+        { path: "categories", element: <Categories /> },
       ],
     },
     {
@@ -44,7 +50,26 @@ export const MainRoutes = () => {
         { path: "", element: <HomePage /> },
         { path: "sign-in", element: <SignIn /> },
         { path: "sign-up", element: <SignUp /> },
-        { path: "dashboard", element: <Navigate to="/sign-in" replace /> },
+        {
+          path: "dashboard/expenses",
+          element: <Navigate to="/sign-in" replace />,
+        },
+        {
+          path: "dashboard/charts",
+          element: <Navigate to="/sign-in" replace />,
+        },
+        {
+          path: "dashboard/parties",
+          element: <Navigate to="/sign-in" replace />,
+        },
+        {
+          path: "dashboard/categories",
+          element: <Navigate to="/sign-in" replace />,
+        },
+        {
+          path: "dashboard/modes",
+          element: <Navigate to="/sign-in" replace />,
+        },
         { path: "*", element: <NotFound /> },
       ],
     },
