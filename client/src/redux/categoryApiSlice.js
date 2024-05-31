@@ -11,6 +11,29 @@ export const categoryApiSlice = apiSlice.injectEndpoints({
         credentials: "include",
       }),
     }),
+    createCategory: builder.mutation({
+      query: (data) => ({
+        url: BACKEND_URL + `${CATEGORY_URL}`,
+        method: "POST",
+        credentials: "include",
+        body: data,
+      }),
+    }),
+    updateCategory: builder.mutation({
+      query: ({ id, data }) => ({
+        url: BACKEND_URL + `${CATEGORY_URL}/${id}`,
+        method: "PUT",
+        credentials: "include",
+        body: data,
+      }),
+    }),
+    deleteCategory: builder.mutation({
+      query: (id) => ({
+        url: BACKEND_URL + `${CATEGORY_URL}/${id}`,
+        method: "DELETE",
+        credentials: "include",
+      }),
+    }),
   }),
 });
 

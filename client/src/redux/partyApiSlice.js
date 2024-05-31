@@ -11,6 +11,29 @@ export const partyApiSlice = apiSlice.injectEndpoints({
         credentials: "include",
       }),
     }),
+    createParty: builder.mutation({
+      query: (data) => ({
+        url: BACKEND_URL + `${PARTY_URL}`,
+        method: "POST",
+        credentials: "include",
+        body: data,
+      }),
+    }),
+    updateParty: builder.mutation({
+      query: ({ id, data }) => ({
+        url: BACKEND_URL + `${PARTY_URL}/${id}`,
+        method: "PUT",
+        credentials: "include",
+        body: data,
+      }),
+    }),
+    deleteParty: builder.mutation({
+      query: (id) => ({
+        url: BACKEND_URL + `${PARTY_URL}/${id}`,
+        method: "DELETE",
+        credentials: "include",
+      }),
+    }),
   }),
 });
 

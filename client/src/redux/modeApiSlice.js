@@ -11,6 +11,29 @@ export const modeApiSlice = apiSlice.injectEndpoints({
         credentials: "include",
       }),
     }),
+    createMode: builder.mutation({
+      query: (data) => ({
+        url: BACKEND_URL + `${MODE_URL}`,
+        method: "POST",
+        credentials: "include",
+        body: data,
+      }),
+    }),
+    updateMode: builder.mutation({
+      query: ({ id, data }) => ({
+        url: BACKEND_URL + `${MODE_URL}/${id}`,
+        method: "PUT",
+        credentials: "include",
+        body: data,
+      }),
+    }),
+    deleteMode: builder.mutation({
+      query: (id) => ({
+        url: BACKEND_URL + `${MODE_URL}/${id}`,
+        method: "DELETE",
+        credentials: "include",
+      }),
+    }),
   }),
 });
 
