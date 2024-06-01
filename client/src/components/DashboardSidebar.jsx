@@ -1,6 +1,6 @@
 import { BiSolidCategory, BiSolidCategoryAlt } from "react-icons/bi";
 import { FaMoneyBill, FaSignOutAlt } from "react-icons/fa";
-import { FaChartSimple, FaUserGroup } from "react-icons/fa6";
+import { FaUserGroup } from "react-icons/fa6";
 import { useDispatch } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -50,20 +50,6 @@ export const DashboardSidebar = ({ sidebarOpen, onSidebarClose }) => {
                 >
                   <FaMoneyBill size={20} />
                   <span className="ms-3">Expenses</span>
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to={"/dashboard/charts"}
-                  className={({ isActive }) =>
-                    `flex items-center p-2 text-sm text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group ${
-                      isActive ? "bg-gray-200 dark:bg-gray-900" : ""
-                    }`
-                  }
-                  onClick={onSidebarClose}
-                >
-                  <FaChartSimple size={20} />
-                  <span className="ms-3">Charts</span>
                 </NavLink>
               </li>
               <li>

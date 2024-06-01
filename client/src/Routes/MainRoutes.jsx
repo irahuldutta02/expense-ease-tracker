@@ -55,10 +55,6 @@ export const MainRoutes = () => {
           element: <Navigate to="/sign-in" replace />,
         },
         {
-          path: "dashboard/charts",
-          element: <Navigate to="/sign-in" replace />,
-        },
-        {
           path: "dashboard/parties",
           element: <Navigate to="/sign-in" replace />,
         },
