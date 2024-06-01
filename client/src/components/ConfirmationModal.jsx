@@ -32,7 +32,7 @@ export const ConfirmationModal = () => {
 
                 <div className="flex justify-center items-center gap-4 mt-4">
                   <button
-                    className="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded-lg dark:text-gray-900"
+                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded flex justify-center items-center gap-2 w-24"
                     onClick={() => {
                       confirmationModelData?.onClose(false);
                       closeConfirmationModel();
@@ -41,7 +41,7 @@ export const ConfirmationModal = () => {
                     {confirmationModelData?.answer[1] ?? "No"}
                   </button>
                   <button
-                    className="bg-red-300 hover:bg-red-400 px-4 py-2 rounded-lg dark:text-gray-900"
+                    className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded flex justify-center items-center gap-2 w-24"
                     onClick={() => {
                       confirmationModelData?.onClose(true);
                       closeConfirmationModel();
