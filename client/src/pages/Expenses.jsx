@@ -608,7 +608,7 @@ export const Expenses = () => {
                     Filter By Party
                   </label>
                   <div
-                    className={`bg-gray-50 border  text-gray-900 text-sm rounded-lg block w-full ps-10 dark:bg-gray-700  dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500  pl-0 ${
+                    className={`bg-gray-50 border  text-gray-900 text-sm rounded-lg block w-full dark:bg-gray-700  dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500  pl-0 ${
                       partyFilter.length > 0
                         ? "border-blue-500"
                         : "border-gray-300 dark:border-gray-600"
@@ -710,7 +710,7 @@ export const Expenses = () => {
                     Filter By Category
                   </label>
                   <div
-                    className={`bg-gray-50 border  text-gray-900 text-sm rounded-lg block w-full ps-10 dark:bg-gray-700  dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500  pl-0 ${
+                    className={`bg-gray-50 border  text-gray-900 text-sm rounded-lg block w-full dark:bg-gray-700  dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500  pl-0 ${
                       categoryFilter.length > 0
                         ? "border-blue-500"
                         : "border-gray-300 dark:border-gray-600"
@@ -818,7 +818,7 @@ export const Expenses = () => {
                   </label>
 
                   <div
-                    className={`bg-gray-50 border  text-gray-900 text-sm rounded-lg block w-full ps-10 dark:bg-gray-700  dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500  pl-0 ${
+                    className={`bg-gray-50 border  text-gray-900 text-sm rounded-lg block w-full dark:bg-gray-700  dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500  pl-0 ${
                       modeFilter.length > 0
                         ? "border-blue-500"
                         : "border-gray-300 dark:border-gray-600"
@@ -923,7 +923,7 @@ export const Expenses = () => {
                     name="formDate"
                     value={fromDate}
                     onChange={(e) => setFromDate(e.target.value)}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 outline-none"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 outline-none"
                   />
                 </div>
                 {/* end date */}
@@ -940,7 +940,7 @@ export const Expenses = () => {
                     name="toDate"
                     value={toDate}
                     onChange={(e) => setToDate(e.target.value)}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 outline-none"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 outline-none"
                   />
                 </div>
                 {/* range date */}
@@ -958,7 +958,7 @@ export const Expenses = () => {
                     }}
                     id="rangeDate"
                     name="rangeDate"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 outline-none"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 outline-none"
                   >
                     <option value="default">Choose a Range</option>
                     <option value="this_month">This Month</option>
@@ -1111,7 +1111,7 @@ export const Expenses = () => {
 
               {/* pagination */}
               <div className="mt-4 flex justify-center gap-4 items-center">
-                {!isLoading && filteredExpenses?.length / rowsPerPage > 0 && (
+                {!isLoading && filteredExpenses?.length / rowsPerPage > 1 && (
                   <>
                     <button
                       onClick={() => {
