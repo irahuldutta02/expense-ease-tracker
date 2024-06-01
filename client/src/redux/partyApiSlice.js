@@ -37,4 +37,9 @@ export const partyApiSlice = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useGetPartiesQuery } = partyApiSlice;
+export const {
+  useGetPartiesQuery,
+  useCreatePartyMutation,
+  useDeletePartyMutation,
+  useUpdatePartyMutation,
+} = partyApiSlice;

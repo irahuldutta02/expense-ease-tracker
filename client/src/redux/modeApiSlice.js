@@ -37,4 +37,9 @@ export const modeApiSlice = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useGetModesQuery } = modeApiSlice;
+export const {
+  useGetModesQuery,
+  useCreateModeMutation,
+  useDeleteModeMutation,
+  useUpdateModeMutation,
+} = modeApiSlice;

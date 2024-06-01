@@ -37,4 +37,9 @@ export const categoryApiSlice = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useGetCategoriesQuery } = categoryApiSlice;
+export const {
+  useGetCategoriesQuery,
+  useCreateCategoryMutation,
+  useDeleteCategoryMutation,
+  useUpdateCategoryMutation,
+} = categoryApiSlice;
