@@ -69,6 +69,16 @@ const updateCategory = asyncHandler(async (req, res) => {
       throw new Error("Not authorized to update this category");
     }
 
+    const nameExist = await Category.findOne({
+      Name: name,
+      UserId: UserId,
+    });
+
+    if (nameExist) {
+      res.status(400);
+      throw new Error("Category already exists");
+    }
+
     category.Name = name;
 
     const updatedCategory = await category.save();

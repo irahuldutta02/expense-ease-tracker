@@ -69,6 +69,16 @@ const updateParty = asyncHandler(async (req, res) => {
       throw new Error("Not authorized to update this party");
     }
 
+    const nameExist = await Party.findOne({
+      Name: name,
+      UserId: UserId,
+    });
+
+    if (nameExist) {
+      res.status(400);
+      throw new Error("Party already exists");
+    }
+
     party.Name = name;
 
     const updatedParty = await party.save();

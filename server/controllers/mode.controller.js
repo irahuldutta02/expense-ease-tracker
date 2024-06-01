@@ -69,6 +69,16 @@ const updateMode = asyncHandler(async (req, res) => {
       throw new Error("Not authorized to update this mode");
     }
 
+    const nameExist = await Mode.findOne({
+      Name: name,
+      UserId: UserId,
+    });
+
+    if (nameExist) {
+      res.status(400);
+      throw new Error("Mode already exists");
+    }
+
     mode.Name = name;
 
     const updatedMode = await mode.save();
