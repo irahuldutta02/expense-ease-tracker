@@ -1,6 +1,9 @@
 const asyncHandler = require("express-async-handler");
 const User = require("../models/user.model.js");
 const generateToken = require("../utils/generateToken.js");
+const sendEmail = require("../utils/sendEmail.js");
+const { CLIENT_URL } = require("../config/server.config.js");
+const crypto = require("crypto");
 
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -192,6 +195,7 @@ const resetPassword = asyncHandler(async (req, res) => {
       },
     });
   } catch (error) {
+    console.log(error);
     res.status(400);
     throw new Error("Invalid token");
   }
