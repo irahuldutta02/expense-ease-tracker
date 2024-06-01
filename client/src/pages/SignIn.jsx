@@ -2,7 +2,10 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useLoginMutation } from "../redux/userApiSlice";
+import {
+  useForgotPasswordMutation,
+  useLoginMutation,
+} from "../redux/userApiSlice";
 import { setCredentials } from "../redux/userSlice";
 
 export const SignIn = () => {
@@ -13,6 +16,9 @@ export const SignIn = () => {
   const [password, setPassword] = useState("");
 
   const [login, { isLoading }] = useLoginMutation();
+
+  const [forgotPassword, { isLoading: isLoadingPassword }] =
+    useForgotPasswordMutation();
 
   const validate = () => {
     if (email.trim() === "" || password.trim() === "") {
@@ -51,6 +57,25 @@ export const SignIn = () => {
     }
 
     console.log("Form submitted");
+  };
+
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    if (email === "") {
+      toast.error("Please enter your email");
+      return;
+    }
+    try {
+      const res = await forgotPassword({ email }).unwrap();
+      toast.success(res.message);
+    } catch (error) {
+      toast.error(
+        error?.data?.message ||
+          error?.message ||
+          error?.error ||
+          "An error occurred"
+      );
+    }
   };
 
   return (
@@ -140,12 +165,15 @@ export const SignIn = () => {
               </button>
 
               <div className="mt-6 text-center ">
-                <Link
-                  to={"/sign-in"}
-                  className="text-sm text-blue-500 hover:underline dark:text-blue-400"
+                <button
+                  className={`text-sm text-blue-500 dark:text-blue-400 ${
+                    isLoadingPassword ? "cursor-not-allowed" : "cursor-pointer"
+                  }`}
+                  onClick={handleForgotPassword}
+                  disabled={isLoadingPassword}
                 >
-                  Forgot Password?
-                </Link>
+                  {isLoadingPassword ? "Sending Email..." : "Forgot Password?"}
+                </button>
               </div>
             </div>
           </form>

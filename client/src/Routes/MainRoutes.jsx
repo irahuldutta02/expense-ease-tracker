@@ -11,6 +11,7 @@ import { Expenses } from "../pages/Expenses";
 import { Categories } from "../pages/Categories";
 import { Modes } from "../pages/Modes";
 import { Parties } from "../pages/Parties";
+import { ResetPass } from "../pages/ResetPass";
 
 export const MainRoutes = () => {
   const { userInfo } = useSelector((state) => state.user);
@@ -50,6 +51,7 @@ export const MainRoutes = () => {
         { path: "", element: <HomePage /> },
         { path: "sign-in", element: <SignIn /> },
         { path: "sign-up", element: <SignUp /> },
+        { path: "reset-password/:resetToken", element: <ResetPass /> },
         {
           path: "dashboard/expenses",
           element: <Navigate to="/sign-in" replace />,
@@ -66,6 +68,7 @@ export const MainRoutes = () => {
           path: "dashboard/modes",
           element: <Navigate to="/sign-in" replace />,
         },
+
         { path: "*", element: <NotFound /> },
       ],
     },
