@@ -10,7 +10,9 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import { MdDelete, MdEditSquare } from "react-icons/md";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import { ConfirmationModelContext } from "../context/ContextProvider";
 import { useGetCategoriesQuery } from "../redux/categoryApiSlice";
 import {
   useCreateExpenseMutation,
@@ -23,7 +25,6 @@ import { useGetPartiesQuery } from "../redux/partyApiSlice";
 import { convertTo12HourTime } from "../utils/convertTo12HourTime";
 import { convertToReadableDateString } from "../utils/convertToReadableDateString";
 import { roundToTwoDecimalPlaces } from "../utils/roundToTwoDecimalPlaces";
-import { ConfirmationModelContext } from "../context/ContextProvider";
 
 export const Expenses = () => {
   const { data, isLoading, isError, refetch } = useGetExpensesQuery();
@@ -678,6 +679,15 @@ export const Expenses = () => {
                             </label>
                           </div>
                         ))}
+
+                        <div className="flex justify-center items-center w-full flex-col gap-4">
+                          <Link
+                            className="text-green-500 font-bold hover:underline"
+                            to={"/dashboard/parties"}
+                          >
+                            Add Party
+                          </Link>
+                        </div>
                       </div>
                       <hr className="w-full" />
                       {/* footer */}
@@ -785,6 +795,14 @@ export const Expenses = () => {
                             </label>
                           </div>
                         ))}
+                        <div className="flex justify-center items-center w-full flex-col gap-4">
+                          <Link
+                            className="text-green-500 font-bold hover:underline"
+                            to={"/dashboard/categories"}
+                          >
+                            Add Category
+                          </Link>
+                        </div>
                       </div>
                       <hr className="w-full" />
                       {/* footer */}
@@ -886,6 +904,14 @@ export const Expenses = () => {
                             </label>
                           </div>
                         ))}
+                        <div className="flex justify-center items-center w-full flex-col gap-4">
+                          <Link
+                            className="text-green-500 font-bold hover:underline"
+                            to={"/dashboard/modes"}
+                          >
+                            Add Mode
+                          </Link>
+                        </div>
                       </div>
                       <hr className="w-full" />
                       {/* footer */}
