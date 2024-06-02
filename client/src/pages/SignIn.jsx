@@ -7,6 +7,7 @@ import {
   useLoginMutation,
 } from "../redux/userApiSlice";
 import { setCredentials } from "../redux/userSlice";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 
 export const SignIn = () => {
   const dispatch = useDispatch();
@@ -14,6 +15,8 @@ export const SignIn = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const [login, { isLoading }] = useLoginMutation();
 
@@ -143,12 +146,23 @@ export const SignIn = () => {
               </span>
 
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 className="block w-full px-10 py-3 text-gray-700 bg-white border rounded-lg dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+
+              <span
+                className="absolute right-0 cursor-pointer"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {!showPassword ? (
+                  <FaRegEyeSlash className="text-gray-300 dark:text-gray-500 w-6 h-6 mx-3" />
+                ) : (
+                  <FaRegEye className="text-gray-300 dark:text-gray-500 w-6 h-6 mx-3" />
+                )}
+              </span>
             </div>
 
             <div className="mt-6">

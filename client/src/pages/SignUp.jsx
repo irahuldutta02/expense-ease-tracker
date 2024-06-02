@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { useRegisterMutation } from "../redux/userApiSlice";
 import { useNavigate } from "react-router-dom";
 import { FiUser } from "react-icons/fi";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 
 export const SignUp = () => {
   const dispatch = useDispatch();
@@ -15,6 +16,9 @@ export const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [register, { isLoading: isRegistering }] = useRegisterMutation();
 
@@ -146,12 +150,23 @@ export const SignUp = () => {
               </span>
 
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 className="block w-full px-10 py-3 text-gray-700 bg-white border rounded-lg dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+
+              <span
+                className="absolute right-0 cursor-pointer"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {!showPassword ? (
+                  <FaRegEyeSlash className="text-gray-300 dark:text-gray-500 w-6 h-6 mx-3" />
+                ) : (
+                  <FaRegEye className="text-gray-300 dark:text-gray-500 w-6 h-6 mx-3" />
+                )}
+              </span>
             </div>
 
             <div className="relative flex items-center mt-4">
@@ -173,12 +188,23 @@ export const SignUp = () => {
               </span>
 
               <input
-                type="password"
+                type={showConfirmPassword ? "text" : "password"}
                 className="block w-full px-10 py-3 text-gray-700 bg-white border rounded-lg dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
                 placeholder="Confirm Password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
+
+              <span
+                className="absolute right-0 cursor-pointer"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {!showConfirmPassword ? (
+                  <FaRegEyeSlash className="text-gray-300 dark:text-gray-500 w-6 h-6 mx-3" />
+                ) : (
+                  <FaRegEye className="text-gray-300 dark:text-gray-500 w-6 h-6 mx-3" />
+                )}
+              </span>
             </div>
 
             <div className="mt-6">
