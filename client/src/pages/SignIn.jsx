@@ -55,8 +55,6 @@ export const SignIn = () => {
           "An error occurred"
       );
     }
-
-    console.log("Form submitted");
   };
 
   const handleForgotPassword = async (e) => {
