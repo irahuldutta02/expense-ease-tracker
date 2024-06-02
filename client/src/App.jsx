@@ -1,5 +1,4 @@
 import { Toaster } from "react-hot-toast";
-import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 import { MainRoutes } from "./Routes/MainRoutes";
 import { ThemeContext } from "./context/ContextProvider";
