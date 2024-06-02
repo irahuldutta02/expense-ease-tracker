@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import {
   FaAngleLeft,
   FaAngleRight,
@@ -11,7 +12,6 @@ import {
 } from "react-icons/fa";
 import { MdDelete, MdEditSquare } from "react-icons/md";
 import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
 import { ConfirmationModelContext } from "../context/ContextProvider";
 import { useGetCategoriesQuery } from "../redux/categoryApiSlice";
 import {

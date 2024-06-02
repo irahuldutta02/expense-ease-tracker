@@ -1,7 +1,7 @@
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { toast } from "react-toastify";
 import { useResetPasswordMutation } from "../redux/userApiSlice";
 
 export const ResetPass = () => {

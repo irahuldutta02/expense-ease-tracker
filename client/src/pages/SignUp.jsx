@@ -1,12 +1,11 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
-import { setCredentials } from "../redux/userSlice";
-import { useDispatch } from "react-redux";
-import { useRegisterMutation } from "../redux/userApiSlice";
-import { useNavigate } from "react-router-dom";
-import { FiUser } from "react-icons/fi";
+import toast from "react-hot-toast";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+import { FiUser } from "react-icons/fi";
+import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { useRegisterMutation } from "../redux/userApiSlice";
+import { setCredentials } from "../redux/userSlice";
 
 export const SignUp = () => {
   const dispatch = useDispatch();

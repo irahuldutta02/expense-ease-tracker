@@ -1,9 +1,9 @@
+import toast from "react-hot-toast";
 import { BiSolidCategory, BiSolidCategoryAlt } from "react-icons/bi";
 import { FaMoneyBill, FaSignOutAlt } from "react-icons/fa";
 import { FaUserGroup } from "react-icons/fa6";
 import { useDispatch } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import { useLogoutMutation } from "../redux/userApiSlice";
 import { logout } from "../redux/userSlice";
 

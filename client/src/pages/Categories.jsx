@@ -1,12 +1,12 @@
 import { useContext, useState } from "react";
+import toast from "react-hot-toast";
+import { ConfirmationModelContext } from "../context/ContextProvider";
 import {
   useCreateCategoryMutation,
   useDeleteCategoryMutation,
   useGetCategoriesQuery,
   useUpdateCategoryMutation,
 } from "../redux/categoryApiSlice";
-import { toast } from "react-toastify";
-import { ConfirmationModelContext } from "../context/ContextProvider";
 
 export const Categories = () => {
   const { data, isLoading, isError, refetch } = useGetCategoriesQuery();

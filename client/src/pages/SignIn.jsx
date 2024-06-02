@@ -1,13 +1,13 @@
 import { useState } from "react";
+import toast from "react-hot-toast";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import {
   useForgotPasswordMutation,
   useLoginMutation,
 } from "../redux/userApiSlice";
 import { setCredentials } from "../redux/userSlice";
-import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 
 export const SignIn = () => {
   const dispatch = useDispatch();

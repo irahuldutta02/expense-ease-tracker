@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 import { ConfirmationModelContext } from "../context/ContextProvider";
 import {
   useCreatePartyMutation,

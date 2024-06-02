@@ -1,4 +1,4 @@
-import { ToastContainer } from "react-toastify";
+import { Toaster } from "react-hot-toast";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 import { MainRoutes } from "./Routes/MainRoutes";
@@ -13,14 +13,7 @@ function App() {
     <>
       <div className={theme === "dark" ? "dark" : "light"}>
         <MainRoutes />
-        <ToastContainer
-          autoClose={2000}
-          position="bottom-right"
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="colored"
-        />
+        <Toaster position="top-center" reverseOrder={false} />
         <ConfirmationModal />
       </div>
     </>
