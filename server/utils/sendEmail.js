@@ -18,11 +18,10 @@ const sendEmail = async (options) => {
   });
 
   const mailOptions = {
-    from: "Rahul Dutta <dev.rahul.dutta.02@gmail.com>",
+    from: "ExpenseEase <dev.rahul.dutta.02@gmail.com>",
     to: options.email,
     subject: options.subject,
-    text: options.message,
-    // html: options.html,
+    html: options.htmlMessage,
   };
 
   await transporter.sendMail(mailOptions);

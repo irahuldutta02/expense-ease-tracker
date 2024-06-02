@@ -130,13 +130,50 @@ const forgotPassword = asyncHandler(async (req, res) => {
 
     const resetUrl = `${CLIENT_URL}/reset-password/${resetToken}`;
 
-    const message = `Forgot your password? Click here to rest your password: ${resetUrl}\nIf you have not made this request, please ignore this email!`;
+    const htmlMessage = `<body style="font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0;">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff;">
+        <tr>
+            <td style="text-align: center; padding: 10px 0;">
+                <h1 style="color: #333333;">ExpenseEase</h1>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 20px;">
+                <h2 style="color: #333333;">Reset Your Password</h2>
+                <p style="color: #555555; line-height: 1.5;">
+                    Hello,
+                </p>
+                <p style="color: #555555; line-height: 1.5;">
+                    We received a request to reset your password for your ExpenseEase account. Click the button below to reset your password.
+                </p>
+                <p style="text-align: center; padding: 20px 0;">
+                    <a href=${resetUrl} style="background-color: #28a745; color: #ffffff; text-decoration: none; padding: 10px 20px; border-radius: 5px;">Reset Password</a>
+                </p>
+                <p style="color: #555555; line-height: 1.5;">
+                    If the button above does not work, copy and paste the following link into your browser:
+                </p>
+                <p style="color: #555555; line-height: 1.5;">
+                    <a href=${resetUrl} style="color: #28a745;">${resetUrl}</a>
+                </p>
+                <p style="color: #555555; line-height: 1.5;">
+                    If you did not request a password reset, please ignore this email or contact support if you have questions.
+                </p>
+                <p style="color: #555555; line-height: 1.5;">
+                    Thanks,<br>
+                    The ExpenseEase Team
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: center; padding: 20px 0; color: #999999; font-size: 12px;">
+                &copy;
+    2024 ExpenseEase.All rights reserved.</ td></ tr></ table></ body>`;
 
     try {
       await sendEmail({
         email: user.email,
-        subject: "ShopEase: Your password reset token (valid for 10 minutes)",
-        message,
+        subject: "ExpenseEase: Reset Your Password (valid for 10 minutes)",
+        htmlMessage,
       });
 
       res.status(200).json({
