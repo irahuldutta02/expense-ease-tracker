@@ -25,6 +25,7 @@ import { useGetPartiesQuery } from "../redux/partyApiSlice";
 import { convertTo12HourTime } from "../utils/convertTo12HourTime";
 import { convertToReadableDateString } from "../utils/convertToReadableDateString";
 import { roundToTwoDecimalPlaces } from "../utils/roundToTwoDecimalPlaces";
+import ChartsModel from "../components/ChartsModel";
 
 export const Expenses = () => {
   const { data, isLoading, isError, refetch } = useGetExpensesQuery();
@@ -91,6 +92,11 @@ export const Expenses = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
+
+  const [showCharts, setShowCharts] = useState(false);
+  const closeShowCharts = () => {
+    setShowCharts(false);
+  };
 
   const { openConfirmationModel } = useContext(ConfirmationModelContext);
 
@@ -459,12 +465,12 @@ export const Expenses = () => {
 
   // for hiding the body overflow when modal is open
   useEffect(() => {
-    if (addExpenseModal) {
+    if (addExpenseModal || showCharts) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "auto";
     }
-  }, [addExpenseModal]);
+  }, [addExpenseModal, showCharts]);
 
   // to close all modals when click outside other than the modal
   useEffect(() => {
@@ -576,14 +582,6 @@ export const Expenses = () => {
           <div className="flex justify-between w-full items-center border-b-2 py-4">
             <div className="flex justify-center items-center">
               <h1 className="text-2xl font-bold">Expenses</h1>
-            </div>
-            <div className="flex justify-center items-center">
-              <button
-                onClick={resetHandler}
-                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-              >
-                Reset Filters
-              </button>
             </div>
           </div>
           {isLoading && (
@@ -1071,6 +1069,27 @@ export const Expenses = () => {
                   </div>
                 </div>
               </div>
+              {/* charts and reset filter btn */}
+              <div className="flex justify-end items-center w-full gap-4">
+                <button
+                  onClick={() => {
+                    setShowCharts(true);
+                  }}
+                  className={`bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded w-32 ${
+                    filteredExpenses.length === 0 &&
+                    "opacity-50 cursor-not-allowed"
+                  }`}
+                  disabled={filteredExpenses.length === 0}
+                >
+                  Charts
+                </button>
+                <button
+                  onClick={resetHandler}
+                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-32"
+                >
+                  Reset Filters
+                </button>
+              </div>
 
               {/* data table */}
               <div className="flex justify-center w-full items-center py-4 gap-4 flex-wrap ">
@@ -1485,6 +1504,14 @@ export const Expenses = () => {
                       ))}
                   </div>
                 </>
+              )}
+
+              {/* charts model */}
+              {showCharts && (
+                <ChartsModel
+                  expenses={filteredExpenses}
+                  closeShowCharts={closeShowCharts}
+                />
               )}
             </>
           )}
