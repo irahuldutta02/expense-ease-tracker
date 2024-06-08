@@ -1081,7 +1081,7 @@ export const Expenses = () => {
                   }`}
                   disabled={filteredExpenses.length === 0}
                 >
-                  Charts
+                  Reports
                 </button>
                 <button
                   onClick={resetHandler}
