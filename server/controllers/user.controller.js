@@ -19,6 +19,7 @@ const loginUser = asyncHandler(async (req, res) => {
           _id: user._id,
           name: user.name,
           email: user.email,
+          avatar: user.avatar,
         },
       });
     } else {
@@ -46,6 +47,7 @@ const registerUser = asyncHandler(async (req, res) => {
       name,
       email,
       password,
+      avatar: `https://avatar.iran.liara.run/username?username=${name}`,
     });
 
     if (user) {
@@ -57,6 +59,7 @@ const registerUser = asyncHandler(async (req, res) => {
           _id: user._id,
           name: user.name,
           email: user.email,
+          avatar: user.avatar,
         },
       });
     } else {
@@ -79,6 +82,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
       if (req.body.password) {
         user.password = req.body.password;
       }
+      user.avatar = req.body.avatar || user.avatar;
 
       const updatedUser = await user.save();
 
@@ -90,6 +94,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
           _id: updatedUser._id,
           name: updatedUser.name,
           email: updatedUser.email,
+          avatar: updatedUser.avatar,
         },
       });
     } else {
