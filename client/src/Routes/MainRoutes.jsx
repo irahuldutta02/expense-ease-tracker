@@ -12,6 +12,7 @@ import { Categories } from "../pages/Categories";
 import { Modes } from "../pages/Modes";
 import { Parties } from "../pages/Parties";
 import { ResetPass } from "../pages/ResetPass";
+import { Profile } from "../pages/Profile";
 
 export const MainRoutes = () => {
   const { userInfo } = useSelector((state) => state.user);
@@ -35,6 +36,7 @@ export const MainRoutes = () => {
         { path: "parties", element: <Parties /> },
         { path: "modes", element: <Modes /> },
         { path: "categories", element: <Categories /> },
+        { path: "profile", element: <Profile /> },
       ],
     },
     {
@@ -66,6 +68,10 @@ export const MainRoutes = () => {
         },
         {
           path: "dashboard/modes",
+          element: <Navigate to="/sign-in" replace />,
+        },
+        {
+          path: "dashboard/profile",
           element: <Navigate to="/sign-in" replace />,
         },
 

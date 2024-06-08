@@ -4,8 +4,11 @@ import { GoMoon, GoSun } from "react-icons/go";
 import { Link } from "react-router-dom";
 import { ThemeContext } from "../context/ContextProvider";
 import { DashboardSidebar } from "./DashboardSidebar";
+import { useSelector } from "react-redux";
 
 export const DashboardNav = () => {
+  const currentUser = useSelector((state) => state?.user?.userInfo);
+
   const { theme, toggleTheme } = useContext(ThemeContext);
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -73,6 +76,20 @@ export const DashboardNav = () => {
                       <GoMoon color="white" size={22} />
                     )}
                   </span>
+                </div>
+              </div>
+              <div className="flex items-center ms-3">
+                <div className=" flex justify-center items-center gap-4  dark:text-white">
+                  <Link
+                    to={"/dashboard/profile"}
+                    className={`cursor-pointer rounded-full shadow-lg font-bold w-10 p-[1px]`}
+                  >
+                    <img
+                      className="rounded-full"
+                      src={currentUser?.avatar}
+                      alt="rahul"
+                    />
+                  </Link>
                 </div>
               </div>
             </div>

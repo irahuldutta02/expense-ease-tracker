@@ -9,7 +9,7 @@ const store = configureStore({
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(apiSlice.middleware),
-  devTools: true,
+  devTools: import.meta.env.VITE_NODE_ENV === "development",
 });
 
 export default store;
