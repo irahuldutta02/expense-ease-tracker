@@ -122,7 +122,7 @@ export const Modes = () => {
   return (
     <>
       <div className="flex justify-start items-center flex-col gap-4 w-full">
-        <div className="flex justify-start items-center flex-col gap-4 w-full p-4">
+        <div className="flex justify-start items-center flex-col gap-4 w-full">
           {/* page header */}
           <div className="flex justify-between w-full items-center border-b-2 py-4">
             <div className="flex justify-center items-center">
