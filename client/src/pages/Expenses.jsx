@@ -26,6 +26,7 @@ import { convertTo12HourTime } from "../utils/convertTo12HourTime";
 import { convertToReadableDateString } from "../utils/convertToReadableDateString";
 import { roundToTwoDecimalPlaces } from "../utils/roundToTwoDecimalPlaces";
 import ChartsModel from "../components/ChartsModel";
+import moment from "moment";
 
 export const Expenses = () => {
   const { data, isLoading, isError, refetch } = useGetExpensesQuery();
@@ -112,18 +113,32 @@ export const Expenses = () => {
   });
 
   // filter by date
-  filteredExpenses = filteredExpenses.filter((expense) => {
-    if (fromDate === "" || toDate === "") {
-      return expense;
-    }
+  // filteredExpenses = filteredExpenses.filter((expense) => {
+  //   if (fromDate === "" || toDate === "") {
+  //     return expense;
+  //   }
 
-    // only compare the date not time
-    const expenseDate = new Date(expense.Date).toISOString().split("T")[0];
-    const from = new Date(fromDate).toISOString().split("T")[0];
-    const to = new Date(toDate).toISOString().split("T")[0];
+  //   // only compare the date not time
+  //   const expenseDate = new Date(expense.Date).toISOString().split("T")[0];
+  //   const from = new Date(fromDate).toISOString().split("T")[0];
+  //   const to = new Date(toDate).toISOString().split("T")[0];
 
-    return expenseDate >= from && expenseDate <= to;
-  });
+  //   return expenseDate >= from && expenseDate <= to;
+  // });
+
+  // date filter
+  if (fromDate && toDate) {
+    filteredExpenses = [...filteredExpenses]?.filter((expense) => {
+      const itemDate = moment(expense.Date).format("YYYY-MM-DD");
+      const from = moment(fromDate).format("YYYY-MM-DD");
+      const to = moment(toDate).format("YYYY-MM-DD");
+
+      return (
+        moment(itemDate).isSameOrAfter(from) &&
+        moment(itemDate).isSameOrBefore(to)
+      );
+    });
+  }
 
   // filter by party
   filteredExpenses = filteredExpenses.filter((expense) => {
@@ -425,43 +440,46 @@ export const Expenses = () => {
 
   // for date range filter
   useEffect(() => {
-    if (range === "default") {
-      setFromDate("");
-      setToDate("");
-      return;
-    }
+    if (range === "default") return;
     let fromDate = "";
     let toDate = "";
 
-    const date = new Date();
-
-    if (range === "this_month") {
-      // to date should be the current date && from date should be the first date of the current month
-      const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-      fromDate = firstDay.toISOString().split("T")[0];
-      toDate = date.toISOString().split("T")[0];
+    if (range === "today") {
+      fromDate = moment().format("YYYY-MM-DD");
+      toDate = moment().format("YYYY-MM-DD");
+    } else if (range === "yesterday") {
+      fromDate = moment().subtract(1, "days").format("YYYY-MM-DD");
+      toDate = moment().subtract(1, "days").format("YYYY-MM-DD");
+    } else if (range === "this_month") {
+      fromDate = moment().startOf("month").format("YYYY-MM-DD");
+      toDate = moment().format("YYYY-MM-DD");
     } else if (range === "last_month") {
-      // to date should be the last date of the last month && from date should be the first date of the last month
-      const firstDay = new Date(date.getFullYear(), date.getMonth() - 1, 1);
-      const lastDay = new Date(date.getFullYear(), date.getMonth(), 0);
-      fromDate = firstDay.toISOString().split("T")[0];
-      toDate = lastDay.toISOString().split("T")[0];
+      fromDate = moment()
+        .subtract(1, "months")
+        .startOf("month")
+        .format("YYYY-MM-DD");
+      toDate = moment()
+        .subtract(1, "months")
+        .endOf("month")
+        .format("YYYY-MM-DD");
     } else if (range === "this_year") {
-      // to date should be the current date && from date should be the first date of the current year
-      const firstDay = new Date(date.getFullYear(), 0, 1);
-      fromDate = firstDay.toISOString().split("T")[0];
-      toDate = date.toISOString().split("T")[0];
+      fromDate = moment().startOf("year").format("YYYY-MM-DD");
+      toDate = moment().format("YYYY-MM-DD");
     } else if (range === "last_year") {
-      // to date should be the last date of the last year && from date should be the first date of the last year
-      const firstDay = new Date(date.getFullYear() - 1, 0, 1);
-      const lastDay = new Date(date.getFullYear(), 0, 0);
-      fromDate = firstDay.toISOString().split("T")[0];
-      toDate = lastDay.toISOString().split("T")[0];
+      fromDate = moment()
+        .subtract(1, "years")
+        .startOf("year")
+        .format("YYYY-MM-DD");
+      toDate = moment().subtract(1, "years").endOf("year").format("YYYY-MM-DD");
     }
 
     setFromDate(fromDate);
     setToDate(toDate);
   }, [range]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, fromDate, toDate, range]);
 
   // for hiding the body overflow when modal is open
   useEffect(() => {
