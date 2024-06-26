@@ -27,6 +27,7 @@ import { convertToReadableDateString } from "../utils/convertToReadableDateStrin
 import { roundToTwoDecimalPlaces } from "../utils/roundToTwoDecimalPlaces";
 import ChartsModel from "../components/ChartsModel";
 import moment from "moment";
+import CustomSelect from "../components/CustomSelect";
 
 export const Expenses = () => {
   const { data, isLoading, isError, refetch } = useGetExpensesQuery();
@@ -37,21 +38,24 @@ export const Expenses = () => {
     isError: modesIsError,
     refetch: modesRefetch,
   } = useGetModesQuery();
-  const modes = modesData?.data || [];
+  let modes = modesData?.data || [];
+  modes = [...modes].sort((a, b) => a.Name.localeCompare(b.Name));
   const {
     data: categoriesData,
     isLoading: categoriesIsLoading,
     isError: categoriesIsError,
     refetch: categoriesRefetch,
   } = useGetCategoriesQuery();
-  const categories = categoriesData?.data || [];
+  let categories = categoriesData?.data || [];
+  categories = [...categories].sort((a, b) => a.Name.localeCompare(b.Name));
   const {
     data: partiesData,
     isLoading: partiesIsLoading,
     isError: partiesIsError,
     refetch: partiesRefetch,
   } = useGetPartiesQuery();
-  const parties = partiesData?.data || [];
+  let parties = partiesData?.data || [];
+  parties = [...parties].sort((a, b) => a.Name.localeCompare(b.Name));
 
   const [createExpense, { isLoading: isCreatingExpense }] =
     useCreateExpenseMutation();
@@ -70,13 +74,14 @@ export const Expenses = () => {
 
   const [addExpenseModal, setAddExpenseModal] = useState(false);
   const [expenseType, setExpenseType] = useState(null);
-  const [dateTime, setDateTime] = useState(
-    new Date(Date.now()).toISOString().slice(0, 16)
-  );
+  const [dateTime, setDateTime] = useState(moment().format("YYYY-MM-DDTHH:mm"));
   const [amount, setAmount] = useState("");
-  const [party, setParty] = useState("none");
-  const [category, setCategory] = useState("none");
-  const [mode, setMode] = useState("none");
+  const [party, setParty] = useState("");
+  const [partySearching, setPartySearching] = useState("");
+  const [category, setCategory] = useState("");
+  const [categorySearching, setCategorySearching] = useState("");
+  const [mode, setMode] = useState("");
+  const [modeSearching, setModeSearching] = useState("");
   const [remark, setRemark] = useState("");
 
   const [partyFilter, setPartyFilter] = useState([]);
@@ -111,20 +116,6 @@ export const Expenses = () => {
       return expense;
     }
   });
-
-  // filter by date
-  // filteredExpenses = filteredExpenses.filter((expense) => {
-  //   if (fromDate === "" || toDate === "") {
-  //     return expense;
-  //   }
-
-  //   // only compare the date not time
-  //   const expenseDate = new Date(expense.Date).toISOString().split("T")[0];
-  //   const from = new Date(fromDate).toISOString().split("T")[0];
-  //   const to = new Date(toDate).toISOString().split("T")[0];
-
-  //   return expenseDate >= from && expenseDate <= to;
-  // });
 
   // date filter
   if (fromDate && toDate) {
@@ -187,9 +178,9 @@ export const Expenses = () => {
     setExpenseType(expense?.Cash_In ? "cash_in" : "cash_out");
     setDateTime(expense?.Date);
     setAmount(expense?.Cash_In || expense?.Cash_Out);
-    setParty(expense?.Party?._id || "none");
-    setCategory(expense?.Category?._id || "none");
-    setMode(expense?.Mode?._id || "none");
+    setParty(expense?.Party?._id || "");
+    setCategory(expense?.Category?._id || "");
+    setMode(expense?.Mode?._id || "");
     setRemark(expense?.Remark);
     setAddExpenseModal(true);
   };
@@ -234,11 +225,14 @@ export const Expenses = () => {
   };
 
   const handleResetForm = () => {
-    setDateTime(new Date(Date.now()).toISOString().slice(0, 16));
+    setDateTime(moment().format("YYYY-MM-DDTHH:mm"));
     setAmount("");
-    setParty("none");
-    setCategory("none");
-    setMode("none");
+    setParty("");
+    setPartySearching("");
+    setCategory("");
+    setCategorySearching("");
+    setMode("");
+    setModeSearching("");
     setRemark("");
   };
 
@@ -247,9 +241,9 @@ export const Expenses = () => {
       Date: dateTime,
       Cash_In: expenseType === "cash_in" ? amount : null,
       Cash_Out: expenseType === "cash_out" ? amount : null,
-      Party: party === "none" ? null : party,
-      Category: category === "none" ? null : category,
-      Mode: mode === "none" ? null : mode,
+      Party: party === "" ? null : party,
+      Category: category === "" ? null : category,
+      Mode: mode === "" ? null : mode,
       Remark: remark,
     };
     try {
@@ -269,9 +263,9 @@ export const Expenses = () => {
       Date: dateTime,
       Cash_In: expenseType === "cash_in" ? amount : null,
       Cash_Out: expenseType === "cash_out" ? amount : null,
-      Party: party === "none" ? null : party,
-      Category: category === "none" ? null : category,
-      Mode: mode === "none" ? null : mode,
+      Party: party === "" ? null : party,
+      Category: category === "" ? null : category,
+      Mode: mode === "" ? null : mode,
       Remark: remark,
     };
     try {
@@ -333,9 +327,9 @@ export const Expenses = () => {
     setExpenseType(expense?.Cash_In ? "cash_in" : "cash_out");
     setDateTime(expense?.Date);
     setAmount(expense?.Cash_In || expense?.Cash_Out);
-    setParty(expense?.Party?._id || "none");
-    setCategory(expense?.Category?._id || "none");
-    setMode(expense?.Mode?._id || "none");
+    setParty(expense?.Party?._id || "");
+    setCategory(expense?.Category?._id || "");
+    setMode(expense?.Mode?._id || "");
     setRemark(expense?.Remark);
     setAddExpenseModal(true);
   };
@@ -1334,86 +1328,37 @@ export const Expenses = () => {
                                     onChange={(e) => setAmount(e.target.value)}
                                   />
                                 </div>
+
                                 {/* party */}
-                                <div className="col-span-6 sm:col-span-3">
-                                  <label
-                                    htmlFor="party"
-                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                  >
-                                    Party Name
-                                  </label>
-                                  <select
-                                    id="party"
-                                    name="party"
-                                    className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 outline-none"
-                                    required
-                                    value={party}
-                                    onChange={(e) => setParty(e.target.value)}
-                                  >
-                                    <option value="none">NONE</option>
-                                    {parties.map((party) => (
-                                      <option
-                                        key={party?._id}
-                                        value={party?._id}
-                                      >
-                                        {party?.Name}
-                                      </option>
-                                    ))}
-                                  </select>
-                                </div>
+                                <CustomSelect
+                                  options={parties}
+                                  selected={party}
+                                  setSelected={setParty}
+                                  searching={partySearching}
+                                  setSearching={setPartySearching}
+                                  labelFor="Party"
+                                />
+
                                 {/* category */}
-                                <div className="col-span-6 sm:col-span-3">
-                                  <label
-                                    htmlFor="category"
-                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                  >
-                                    Category
-                                  </label>
-                                  <select
-                                    id="category"
-                                    name="category"
-                                    className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 outline-none"
-                                    required
-                                    value={category}
-                                    onChange={(e) =>
-                                      setCategory(e.target.value)
-                                    }
-                                  >
-                                    <option value="none">NONE</option>
-                                    {categories.map((category) => (
-                                      <option
-                                        key={category?._id}
-                                        value={category?._id}
-                                      >
-                                        {category?.Name}
-                                      </option>
-                                    ))}
-                                  </select>
-                                </div>
+                                <CustomSelect
+                                  options={categories}
+                                  selected={category}
+                                  setSelected={setCategory}
+                                  searching={categorySearching}
+                                  setSearching={setCategorySearching}
+                                  labelFor="Category"
+                                />
+
                                 {/* mode */}
-                                <div className="col-span-6 sm:col-span-3">
-                                  <label
-                                    htmlFor="mode"
-                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                  >
-                                    Mode
-                                  </label>
-                                  <select
-                                    id="mode"
-                                    name="mode"
-                                    className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 outline-none"
-                                    required
-                                    value={mode}
-                                    onChange={(e) => setMode(e.target.value)}
-                                  >
-                                    <option value="none">NONE</option>
-                                    {modes.map((mode) => (
-                                      <option key={mode?._id} value={mode?._id}>
-                                        {mode?.Name}
-                                      </option>
-                                    ))}
-                                  </select>
-                                </div>
+                                <CustomSelect
+                                  options={modes}
+                                  selected={mode}
+                                  setSelected={setMode}
+                                  searching={modeSearching}
+                                  setSearching={setModeSearching}
+                                  labelFor="Mode"
+                                />
+
                                 {/* description */}
                                 <div className="col-span-6">
                                   <label
@@ -1503,7 +1448,7 @@ export const Expenses = () => {
                                   className="w-3 h-3"
                                   aria-hidden="true"
                                   xmlns="http://www.w3.org/2000/svg"
-                                  fill="none"
+                                  fill=""
                                   viewBox="0 0 14 14"
                                 >
                                   <path
