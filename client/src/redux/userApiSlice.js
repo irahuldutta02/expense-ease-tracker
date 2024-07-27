@@ -10,6 +10,12 @@ export const userApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    getMe: builder.mutation({
+      query: () => ({
+        url: BACKEND_URL + `${USERS_URL}/me`,
+        method: "GET",
+      }),
+    }),
     register: builder.mutation({
       query: (data) => ({
         url: BACKEND_URL + `${USERS_URL}/register`,
@@ -43,6 +49,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
 
 export const {
   useLoginMutation,
+  useGetMeMutation,
   useRegisterMutation,
   useUpdateUserProfileMutation,
   useForgotPasswordMutation,
