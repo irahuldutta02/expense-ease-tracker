@@ -39,8 +39,8 @@ const loginUser = asyncHandler(async (req, res) => {
           name: user.name,
           email: user.email,
           avatar: user.avatar,
+          token: token,
         },
-        token: token,
       });
     } else {
       res.status(401);
@@ -80,8 +80,8 @@ const registerUser = asyncHandler(async (req, res) => {
           name: user.name,
           email: user.email,
           avatar: user.avatar,
+          token: token,
         },
-        token: token,
       });
     } else {
       res.status(400);
@@ -116,8 +116,8 @@ const updateUserProfile = asyncHandler(async (req, res) => {
           name: updatedUser.name,
           email: updatedUser.email,
           avatar: updatedUser.avatar,
+          token: token,
         },
-        token: token,
       });
     } else {
       res.status(404);
@@ -244,8 +244,8 @@ const resetPassword = asyncHandler(async (req, res) => {
         name: user.name,
         email: user.email,
         isAdmin: user.isAdmin,
+        token: token,
       },
-      token: token,
     });
   } catch (error) {
     console.log(error);
