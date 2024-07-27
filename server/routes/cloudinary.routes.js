@@ -46,10 +46,16 @@ cloudinaryRoutes.post(
 
       const fileExtension = path.extname(req.file.originalname);
       const fileName = path.basename(req.file.originalname, fileExtension);
-      const publicId = `${fileName}-${Date.now()}${fileExtension}`;
       const resourceType = req.file.mimetype.startsWith("image")
         ? "image"
         : "raw";
+
+      let publicId;
+      if (resourceType === "image") {
+        publicId = `image-${Date.now()}`;
+      } else {
+        publicId = `raw-${Date.now()}${fileExtension}`;
+      }
 
       const cldRes = await handleUpload(
         dataURI,
@@ -58,27 +64,7 @@ cloudinaryRoutes.post(
         resourceType
       );
 
-      const response = {
-        asset_folder: CLOUDINARY_FOLDER,
-        asset_id: cldRes.asset_id,
-        bytes: cldRes.bytes,
-        created_at: cldRes.created_at,
-        display_name: fileName,
-        etag: cldRes.etag,
-        original_filename: fileName,
-        placeholder: cldRes.placeholder,
-        public_id: cldRes.public_id,
-        resource_type: cldRes.resource_type,
-        secure_url: cldRes.secure_url,
-        signature: cldRes.signature,
-        tags: cldRes.tags,
-        type: cldRes.type,
-        url: cldRes.url,
-        version: cldRes.version,
-        version_id: cldRes.version_id,
-      };
-
-      res.json(response);
+      res.json(cldRes);
     } catch (error) {
       console.error(error);
       res.status(500).send({
