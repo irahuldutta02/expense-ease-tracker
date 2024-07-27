@@ -5,6 +5,25 @@ const sendEmail = require("../utils/sendEmail.js");
 const { CLIENT_URL } = require("../config/server.config.js");
 const crypto = require("crypto");
 
+const getMe = asyncHandler(async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select("-password");
+
+    if (user) {
+      res.status(200).json({
+        status: 200,
+        data: user,
+      });
+    } else {
+      res.status(404);
+      throw new Error("User not found");
+    }
+  } catch (error) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+});
+
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
@@ -12,7 +31,7 @@ const loginUser = asyncHandler(async (req, res) => {
     const user = await User.findOne({ email });
 
     if (user && (await user.matchPassword(password))) {
-      generateToken(res, user._id);
+      const token = generateToken(user._id);
       return res.status(200).json({
         status: 200,
         data: {
@@ -21,6 +40,7 @@ const loginUser = asyncHandler(async (req, res) => {
           email: user.email,
           avatar: user.avatar,
         },
+        token: token,
       });
     } else {
       res.status(401);
@@ -51,7 +71,7 @@ const registerUser = asyncHandler(async (req, res) => {
     });
 
     if (user) {
-      generateToken(res, user._id);
+      const token = generateToken(user._id);
 
       return res.status(201).json({
         status: 201,
@@ -61,6 +81,7 @@ const registerUser = asyncHandler(async (req, res) => {
           email: user.email,
           avatar: user.avatar,
         },
+        token: token,
       });
     } else {
       res.status(400);
@@ -86,7 +107,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 
       const updatedUser = await user.save();
 
-      generateToken(res, updatedUser._id);
+      token = generateToken(updatedUser._id);
 
       res.status(200).json({
         status: 200,
@@ -96,6 +117,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
           email: updatedUser.email,
           avatar: updatedUser.avatar,
         },
+        token: token,
       });
     } else {
       res.status(404);
@@ -105,18 +127,6 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error("User not found");
   }
-});
-
-const logOutUser = asyncHandler((req, res) => {
-  res.cookie("jwt", "", {
-    httpOnly: true,
-    expires: new Date(0),
-  });
-  res.cookie("connect.sid", "", {
-    httpOnly: true,
-    expires: new Date(0),
-  });
-  res.status(200).json({ message: "Logged out successfully" });
 });
 
 const forgotPassword = asyncHandler(async (req, res) => {
@@ -224,7 +234,7 @@ const resetPassword = asyncHandler(async (req, res) => {
     user.passwordResetExpires = undefined;
     await user.save();
 
-    generateToken(res, user._id);
+    const token = generateToken(user._id);
 
     res.status(200).json({
       status: 200,
@@ -235,6 +245,7 @@ const resetPassword = asyncHandler(async (req, res) => {
         email: user.email,
         isAdmin: user.isAdmin,
       },
+      token: token,
     });
   } catch (error) {
     console.log(error);
@@ -244,7 +255,7 @@ const resetPassword = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
-  logOutUser,
+  getMe,
   loginUser,
   registerUser,
   updateUserProfile,

@@ -1,5 +1,4 @@
 const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const express = require("express");
 const { PORT } = require("./config/server.config.js");
@@ -19,34 +18,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.text());
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "http://127.0.0.1:5173",
-  "https://expense-ease-tracker.vercel.app",
-  "https://personal-expense-track.vercel.app",
-];
-
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.header("Access-Control-Allow-Origin", origin);
-  }
-  next();
-});
-
-app.use(
-  cors({
-    origin: [
-      "http://127.0.0.1:5173",
-      "http://localhost:5173",
-      "https://expense-ease-tracker.vercel.app",
-      "https://personal-expense-track.vercel.app",
-    ],
-    methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
-app.use(cookieParser());
+app.use(cors());
 
 app.get("/", (req, res) => {
   return res.status(200).json({

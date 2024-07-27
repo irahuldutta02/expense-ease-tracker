@@ -6,17 +6,18 @@ const User = require("../models/user.model.js");
 const protect = asyncHandler(async (req, res, next) => {
   let token;
 
-  token = req.cookies.jwt;
+  const header = req.header("Authorization");
+  if (header && header.startsWith("Bearer")) {
+    token = header.split(" ")[1];
 
-  if (token) {
-    try {
-      const decoded = jwt.verify(token, JWT_SECRET);
-      req.user = await User.findById(decoded.userId).select("-password");
-      next();
-    } catch {
+    if (!token) {
       res.status(401);
-      throw new Error("Not authorized, token failed");
+      throw new Error("Not authorized, no token");
     }
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = await User.findById(decoded.userId).select("-password");
+    next();
   } else {
     res.status(401);
     throw new Error("Not authorized, no token");
