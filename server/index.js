@@ -10,6 +10,7 @@ const expenseRoutes = require("./routes/expense.routes.js");
 const modeRoutes = require("./routes/mode.routes.js");
 const partyRoutes = require("./routes/party.routes.js");
 const userRoutes = require("./routes/user.routes.js");
+const cloudinaryRoutes = require("./routes/cloudinary.routes.js");
 
 const app = express();
 connectDB();
@@ -33,6 +34,7 @@ app.use("/api/expense", expenseRoutes);
 app.use("/api/mode", modeRoutes);
 app.use("/api/category", categoryRoutes);
 app.use("/api/party", partyRoutes);
+app.use("/api/cloudinary", cloudinaryRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
