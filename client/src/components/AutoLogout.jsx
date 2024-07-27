@@ -18,7 +18,6 @@ export const AutoLogout = () => {
       if (userInfo) {
         try {
           await getMe().unwrap();
-          console.log("User session is active.");
         } catch (error) {
           dispatch(logout());
           navigate("/sign-in");

@@ -28,6 +28,7 @@ import { roundToTwoDecimalPlaces } from "../utils/roundToTwoDecimalPlaces";
 import ChartsModel from "../components/ChartsModel";
 import moment from "moment";
 import CustomSelect from "../components/CustomSelect";
+import { FaChartColumn } from "react-icons/fa6";
 
 export const Expenses = () => {
   const { data, isLoading, isError, refetch } = useGetExpensesQuery();
@@ -72,6 +73,7 @@ export const Expenses = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 20;
 
+  const [showFilters, setShowFilters] = useState(false);
   const [addExpenseModal, setAddExpenseModal] = useState(false);
   const [expenseType, setExpenseType] = useState(null);
   const [dateTime, setDateTime] = useState(moment().format("YYYY-MM-DDTHH:mm"));
@@ -370,31 +372,31 @@ export const Expenses = () => {
           {convertToReadableDateString(expense?.Date)} <br />
           {convertTo12HourTime(expense?.Date)}
         </td>
-        <td className="px-6 py-4 border-r border-gray-300 dark:border-gray-700">
+        <td className="px-6 py-4 border-r whitespace-nowrap border-gray-300 dark:border-gray-700">
           {expense?.Remark}
         </td>
-        <td className="px-6 py-4 border-r border-gray-300 dark:border-gray-700">
+        <td className="px-6 py-4 border-r whitespace-nowrap border-gray-300 dark:border-gray-700">
           {expense?.Party?.Name}
         </td>
-        <td className="px-6 py-4 border-r border-gray-300 dark:border-gray-700">
+        <td className="px-6 py-4 border-r whitespace-nowrap border-gray-300 dark:border-gray-700">
           {expense?.Category?.Name}
         </td>
-        <td className="px-6 py-4 border-r border-gray-300 dark:border-gray-700">
+        <td className="px-6 py-4 border-r whitespace-nowrap border-gray-300 dark:border-gray-700">
           {expense?.Mode?.Name}
         </td>
-        <td className="px-6 py-4 border-r border-gray-300 dark:border-gray-700">
+        <td className="px-6 py-4 border-r whitespace-nowrap border-gray-300 dark:border-gray-700">
           <div className="w-24">
             ₹{" "}
             <span className="text-green-500 font-bold">{expense?.Cash_In}</span>
             <span className="text-red-500 font-bold">{expense?.Cash_Out}</span>
           </div>
         </td>
-        <td className="px-6 py-4 border-r border-gray-300 dark:border-gray-700">
+        <td className="px-6 py-4 border-r whitespace-nowrap border-gray-300 dark:border-gray-700">
           <div className="w-24">
             ₹ {roundToTwoDecimalPlaces(expense?.balance)}
           </div>
         </td>
-        <td className="px-6 py-4">
+        <td className="px-6 whitespace-nowrap py-4">
           <div className="flex justify-center items-center gap-4">
             <button
               className="text-blue-400 font-bold rounded hover:transform hover:scale-125 transition duration-300 ease-in-out"
@@ -595,6 +597,16 @@ export const Expenses = () => {
             <div className="flex justify-center items-center">
               <h1 className="text-2xl font-bold">Expenses</h1>
             </div>
+            <div className="flex justify-center items-center">
+              <button
+                onClick={() => {
+                  setShowFilters(!showFilters);
+                }}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex justify-center items-center gap-2 w-32"
+              >
+                {showFilters ? "Hide Filters" : "Show Filters"}
+              </button>
+            </div>
           </div>
           {isLoading && (
             <div className="flex justify-center items-center w-full h-96">
@@ -605,405 +617,420 @@ export const Expenses = () => {
           )}
           {!isLoading && (
             <>
-              {/* category, mode, party filter */}
-              <div className="flex justify-between w-full items-center py-4 gap-4 flex-wrap">
-                {/* party filter */}
-                <div
-                  id="partyFilter"
-                  className="flex justify-end items-start flex-col gap-2 flex-1 min-w-48 min-h-20 relative cursor-pointer"
-                >
-                  <label
-                    htmlFor="formDate"
-                    className="text-sm font-semibold text-gray-900 dark:text-white"
-                  >
-                    Filter By Party
-                  </label>
-                  <div
-                    className={`bg-gray-50 border  text-gray-900 text-sm rounded-lg block w-full dark:bg-gray-700  dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500  pl-0 ${
-                      partyFilter.length > 0
-                        ? "border-blue-500"
-                        : "border-gray-300 dark:border-gray-600"
-                    }`}
-                    onClick={() => setPartyModalOpen(true)}
-                  >
+              {showFilters && (
+                <>
+                  {/* category, mode, party filter */}
+                  <div className="flex justify-between w-full items-center py-4 gap-4 flex-wrap">
+                    {/* party filter */}
                     <div
-                      className={`p-2.5 ${
-                        partyFilter.length > 0
-                          ? "text-blue-500 font-bold"
-                          : "text-gray-900 dark:text-white"
-                      }`}
+                      id="partyFilter"
+                      className="flex justify-end items-start flex-col gap-2 flex-1 min-w-48 min-h-20 relative cursor-pointer"
                     >
-                      Parties:{" "}
-                      {partyFilter.length > 0
-                        ? `${partyFilter.length} Selected`
-                        : "All"}
-                    </div>
-                  </div>
-
-                  {/* party modal */}
-                  {partyModalOpen && (
-                    <div className="absolute w-full top-24 flex justify-center items-center flex-col gap-4 bg-gray-50 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white z-20">
-                      {/* header */}
-                      <div className="w-full pt-4 px-4">
-                        <input
-                          type="text"
-                          id="small-input"
-                          className="block w-full p-2 text-gray-900 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 border border-blue-500  focus:border-blue-500 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white outline-none"
-                          placeholder="Search Party"
-                          value={partySearchTerm}
-                          onChange={(e) => setPartySearchTerm(e.target.value)}
-                        />
-                      </div>
-                      <hr className="w-full" />
-                      {/* body */}
-                      <div className="w-full flex flex-col gap-2 px-4 max-h-60 overflow-y-auto">
-                        {filteredParties.map((party) => (
-                          <div
-                            key={party?._id}
-                            className="flex items-center w-full"
-                          >
-                            <input
-                              id={party?._id}
-                              type="checkbox"
-                              value={party?._id}
-                              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
-                              checked={partyFilter.includes(party?._id)}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setPartyFilter([...partyFilter, party?._id]);
-                                }
-                                if (!e.target.checked) {
-                                  setPartyFilter(
-                                    partyFilter.filter(
-                                      (id) => id !== party?._id
-                                    )
-                                  );
-                                }
-                              }}
-                            />
-                            <label
-                              htmlFor={party?._id}
-                              className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                            >
-                              {party?.Name}
-                            </label>
-                          </div>
-                        ))}
-
-                        <div className="flex justify-center items-center w-full flex-col gap-4">
-                          <Link
-                            className="text-green-500 font-bold hover:underline"
-                            to={"/dashboard/parties"}
-                          >
-                            Add Party
-                          </Link>
+                      <label
+                        htmlFor="formDate"
+                        className="text-sm font-semibold text-gray-900 dark:text-white"
+                      >
+                        Filter By Party
+                      </label>
+                      <div
+                        className={`bg-gray-50 border  text-gray-900 text-sm rounded-lg block w-full dark:bg-gray-700  dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500  pl-0 ${
+                          partyFilter.length > 0
+                            ? "border-blue-500"
+                            : "border-gray-300 dark:border-gray-600"
+                        }`}
+                        onClick={() => setPartyModalOpen(true)}
+                      >
+                        <div
+                          className={`p-2.5 ${
+                            partyFilter.length > 0
+                              ? "text-blue-500 font-bold"
+                              : "text-gray-900 dark:text-white"
+                          }`}
+                        >
+                          Parties:{" "}
+                          {partyFilter.length > 0
+                            ? `${partyFilter.length} Selected`
+                            : "All"}
                         </div>
                       </div>
-                      <hr className="w-full" />
-                      {/* footer */}
-                      <div className="w-full px-4 pb-4 flex justify-end items-center gap-4">
-                        <button
-                          className="font-bold text-gray-400"
-                          onClick={handlePartyModelClear}
-                        >
-                          Clear
-                        </button>
-                        <button
-                          className="font-bold text-blue-500"
-                          onClick={handlePartyModalDone}
-                        >
-                          Done
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                {/* category filter */}
-                <div
-                  id="categoryFilter"
-                  className="flex justify-end items-start flex-col gap-2 flex-1 min-w-48 min-h-20 relative cursor-pointer"
-                >
-                  <label
-                    htmlFor="formDate"
-                    className="text-sm font-semibold text-gray-900 dark:text-white"
-                  >
-                    Filter By Category
-                  </label>
-                  <div
-                    className={`bg-gray-50 border  text-gray-900 text-sm rounded-lg block w-full dark:bg-gray-700  dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500  pl-0 ${
-                      categoryFilter.length > 0
-                        ? "border-blue-500"
-                        : "border-gray-300 dark:border-gray-600"
-                    }`}
-                    onClick={() => setCategoryModalOpen(true)}
-                  >
-                    <div
-                      className={`p-2.5 ${
-                        categoryFilter.length > 0
-                          ? "text-blue-500 font-bold"
-                          : "text-gray-900 dark:text-white"
-                      }`}
-                    >
-                      Categories:{" "}
-                      {categoryFilter.length > 0
-                        ? `${categoryFilter.length} Selected`
-                        : "All"}
-                    </div>
-                  </div>
 
-                  {/* category modal */}
-                  {categoryModalOpen && (
-                    <div className="absolute w-full top-24 flex justify-center items-center flex-col gap-4 bg-gray-50 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white z-20">
-                      {/* header */}
-                      <div className="w-full pt-4 px-4">
-                        <input
-                          type="text"
-                          id="small-input"
-                          className="block w-full p-2 text-gray-900 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 border border-blue-500  focus:border-blue-500 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white outline-none"
-                          placeholder="Search Party"
-                          value={categorySearchTerm}
-                          onChange={(e) =>
-                            setCategorySearchTerm(e.target.value)
-                          }
-                        />
-                      </div>
-                      <hr className="w-full" />
-                      {/* body */}
-                      <div className="w-full flex flex-col gap-2 px-4 max-h-60 overflow-y-auto">
-                        {filteredCategories.map((category) => (
-                          <div
-                            key={category?._id}
-                            className="flex items-center w-full"
-                          >
+                      {/* party modal */}
+                      {partyModalOpen && (
+                        <div className="absolute w-full top-24 flex justify-center items-center flex-col gap-4 bg-gray-50 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white z-20">
+                          {/* header */}
+                          <div className="w-full pt-4 px-4">
                             <input
-                              id={category._id}
-                              type="checkbox"
-                              value={category._id}
-                              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
-                              checked={categoryFilter.includes(category._id)}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setCategoryFilter([
-                                    ...categoryFilter,
-                                    category._id,
-                                  ]);
-                                }
-                                if (!e.target.checked) {
-                                  setCategoryFilter(
-                                    categoryFilter.filter(
-                                      (id) => id !== category._id
-                                    )
-                                  );
-                                }
-                              }}
+                              type="text"
+                              id="small-input"
+                              className="block w-full p-2 text-gray-900 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 border border-blue-500  focus:border-blue-500 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white outline-none"
+                              placeholder="Search Party"
+                              value={partySearchTerm}
+                              onChange={(e) =>
+                                setPartySearchTerm(e.target.value)
+                              }
                             />
-                            <label
-                              htmlFor={category._id}
-                              className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                            >
-                              {category.Name}
-                            </label>
                           </div>
-                        ))}
-                        <div className="flex justify-center items-center w-full flex-col gap-4">
-                          <Link
-                            className="text-green-500 font-bold hover:underline"
-                            to={"/dashboard/categories"}
-                          >
-                            Add Category
-                          </Link>
+                          <hr className="w-full" />
+                          {/* body */}
+                          <div className="w-full flex flex-col gap-2 px-4 max-h-60 overflow-y-auto">
+                            {filteredParties.map((party) => (
+                              <div
+                                key={party?._id}
+                                className="flex items-center w-full"
+                              >
+                                <input
+                                  id={party?._id}
+                                  type="checkbox"
+                                  value={party?._id}
+                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
+                                  checked={partyFilter.includes(party?._id)}
+                                  onChange={(e) => {
+                                    if (e.target.checked) {
+                                      setPartyFilter([
+                                        ...partyFilter,
+                                        party?._id,
+                                      ]);
+                                    }
+                                    if (!e.target.checked) {
+                                      setPartyFilter(
+                                        partyFilter.filter(
+                                          (id) => id !== party?._id
+                                        )
+                                      );
+                                    }
+                                  }}
+                                />
+                                <label
+                                  htmlFor={party?._id}
+                                  className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                >
+                                  {party?.Name}
+                                </label>
+                              </div>
+                            ))}
+
+                            <div className="flex justify-center items-center w-full flex-col gap-4">
+                              <Link
+                                className="text-green-500 font-bold hover:underline"
+                                to={"/dashboard/parties"}
+                              >
+                                Add Party
+                              </Link>
+                            </div>
+                          </div>
+                          <hr className="w-full" />
+                          {/* footer */}
+                          <div className="w-full px-4 pb-4 flex justify-end items-center gap-4">
+                            <button
+                              className="font-bold text-gray-400"
+                              onClick={handlePartyModelClear}
+                            >
+                              Clear
+                            </button>
+                            <button
+                              className="font-bold text-blue-500"
+                              onClick={handlePartyModalDone}
+                            >
+                              Done
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    {/* category filter */}
+                    <div
+                      id="categoryFilter"
+                      className="flex justify-end items-start flex-col gap-2 flex-1 min-w-48 min-h-20 relative cursor-pointer"
+                    >
+                      <label
+                        htmlFor="formDate"
+                        className="text-sm font-semibold text-gray-900 dark:text-white"
+                      >
+                        Filter By Category
+                      </label>
+                      <div
+                        className={`bg-gray-50 border  text-gray-900 text-sm rounded-lg block w-full dark:bg-gray-700  dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500  pl-0 ${
+                          categoryFilter.length > 0
+                            ? "border-blue-500"
+                            : "border-gray-300 dark:border-gray-600"
+                        }`}
+                        onClick={() => setCategoryModalOpen(true)}
+                      >
+                        <div
+                          className={`p-2.5 ${
+                            categoryFilter.length > 0
+                              ? "text-blue-500 font-bold"
+                              : "text-gray-900 dark:text-white"
+                          }`}
+                        >
+                          Categories:{" "}
+                          {categoryFilter.length > 0
+                            ? `${categoryFilter.length} Selected`
+                            : "All"}
                         </div>
                       </div>
-                      <hr className="w-full" />
-                      {/* footer */}
-                      <div className="w-full px-4 pb-4 flex justify-end items-center gap-4">
-                        <button
-                          className="font-bold text-gray-400"
-                          onClick={handleCategoryModelClear}
-                        >
-                          Clear
-                        </button>
-                        <button
-                          className="font-bold text-blue-500"
-                          onClick={handleCategoryModalDone}
-                        >
-                          Done
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                {/* mode filter */}
-                <div
-                  id="modeFilter"
-                  className="flex justify-end items-start flex-col gap-2 flex-1 min-w-48 min-h-20 relative cursor-pointer"
-                >
-                  <label
-                    htmlFor="formDate"
-                    className="text-sm font-semibold text-gray-900 dark:text-white"
-                  >
-                    Filter By Mode
-                  </label>
 
-                  <div
-                    className={`bg-gray-50 border  text-gray-900 text-sm rounded-lg block w-full dark:bg-gray-700  dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500  pl-0 ${
-                      modeFilter.length > 0
-                        ? "border-blue-500"
-                        : "border-gray-300 dark:border-gray-600"
-                    }`}
-                    onClick={() => setModeModalOpen(true)}
-                  >
-                    <div
-                      className={`p-2.5 ${
-                        modeFilter.length > 0
-                          ? "text-blue-500 font-bold"
-                          : "text-gray-900 dark:text-white"
-                      }`}
-                    >
-                      Modes:{" "}
-                      {modeFilter.length > 0
-                        ? `${modeFilter.length} Selected`
-                        : "All"}
-                    </div>
-                  </div>
-
-                  {/* mode modal */}
-                  {modeModalOpen && (
-                    <div className="absolute w-full top-24 flex justify-center items-center flex-col gap-4 bg-gray-50 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white z-20">
-                      {/* header */}
-                      <div className="w-full pt-4 px-4">
-                        <input
-                          type="text"
-                          id="small-input"
-                          className="block w-full p-2 text-gray-900 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 border border-blue-500  focus:border-blue-500 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white outline-none"
-                          placeholder="Search Party"
-                          value={modeSearchTerm}
-                          onChange={(e) => setModeSearchTerm(e.target.value)}
-                        />
-                      </div>
-                      <hr className="w-full" />
-                      {/* body */}
-                      <div className="w-full flex flex-col gap-2 px-4 max-h-60 overflow-y-auto">
-                        {filteredModes.map((mode) => (
-                          <div
-                            key={mode?._id}
-                            className="flex items-center w-full"
-                          >
+                      {/* category modal */}
+                      {categoryModalOpen && (
+                        <div className="absolute w-full top-24 flex justify-center items-center flex-col gap-4 bg-gray-50 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white z-20">
+                          {/* header */}
+                          <div className="w-full pt-4 px-4">
                             <input
-                              id={mode._id}
-                              type="checkbox"
-                              value={mode._id}
-                              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
-                              checked={modeFilter.includes(mode._id)}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setModeFilter([...modeFilter, mode._id]);
-                                }
-                                if (!e.target.checked) {
-                                  setModeFilter(
-                                    modeFilter.filter((id) => id !== mode._id)
-                                  );
-                                }
-                              }}
+                              type="text"
+                              id="small-input"
+                              className="block w-full p-2 text-gray-900 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 border border-blue-500  focus:border-blue-500 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white outline-none"
+                              placeholder="Search Party"
+                              value={categorySearchTerm}
+                              onChange={(e) =>
+                                setCategorySearchTerm(e.target.value)
+                              }
                             />
-                            <label
-                              htmlFor={mode._id}
-                              className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                            >
-                              {mode.Name}
-                            </label>
                           </div>
-                        ))}
-                        <div className="flex justify-center items-center w-full flex-col gap-4">
-                          <Link
-                            className="text-green-500 font-bold hover:underline"
-                            to={"/dashboard/modes"}
-                          >
-                            Add Mode
-                          </Link>
+                          <hr className="w-full" />
+                          {/* body */}
+                          <div className="w-full flex flex-col gap-2 px-4 max-h-60 overflow-y-auto">
+                            {filteredCategories.map((category) => (
+                              <div
+                                key={category?._id}
+                                className="flex items-center w-full"
+                              >
+                                <input
+                                  id={category._id}
+                                  type="checkbox"
+                                  value={category._id}
+                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
+                                  checked={categoryFilter.includes(
+                                    category._id
+                                  )}
+                                  onChange={(e) => {
+                                    if (e.target.checked) {
+                                      setCategoryFilter([
+                                        ...categoryFilter,
+                                        category._id,
+                                      ]);
+                                    }
+                                    if (!e.target.checked) {
+                                      setCategoryFilter(
+                                        categoryFilter.filter(
+                                          (id) => id !== category._id
+                                        )
+                                      );
+                                    }
+                                  }}
+                                />
+                                <label
+                                  htmlFor={category._id}
+                                  className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                >
+                                  {category.Name}
+                                </label>
+                              </div>
+                            ))}
+                            <div className="flex justify-center items-center w-full flex-col gap-4">
+                              <Link
+                                className="text-green-500 font-bold hover:underline"
+                                to={"/dashboard/categories"}
+                              >
+                                Add Category
+                              </Link>
+                            </div>
+                          </div>
+                          <hr className="w-full" />
+                          {/* footer */}
+                          <div className="w-full px-4 pb-4 flex justify-end items-center gap-4">
+                            <button
+                              className="font-bold text-gray-400"
+                              onClick={handleCategoryModelClear}
+                            >
+                              Clear
+                            </button>
+                            <button
+                              className="font-bold text-blue-500"
+                              onClick={handleCategoryModalDone}
+                            >
+                              Done
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    {/* mode filter */}
+                    <div
+                      id="modeFilter"
+                      className="flex justify-end items-start flex-col gap-2 flex-1 min-w-48 min-h-20 relative cursor-pointer"
+                    >
+                      <label
+                        htmlFor="formDate"
+                        className="text-sm font-semibold text-gray-900 dark:text-white"
+                      >
+                        Filter By Mode
+                      </label>
+
+                      <div
+                        className={`bg-gray-50 border  text-gray-900 text-sm rounded-lg block w-full dark:bg-gray-700  dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500  pl-0 ${
+                          modeFilter.length > 0
+                            ? "border-blue-500"
+                            : "border-gray-300 dark:border-gray-600"
+                        }`}
+                        onClick={() => setModeModalOpen(true)}
+                      >
+                        <div
+                          className={`p-2.5 ${
+                            modeFilter.length > 0
+                              ? "text-blue-500 font-bold"
+                              : "text-gray-900 dark:text-white"
+                          }`}
+                        >
+                          Modes:{" "}
+                          {modeFilter.length > 0
+                            ? `${modeFilter.length} Selected`
+                            : "All"}
                         </div>
                       </div>
-                      <hr className="w-full" />
-                      {/* footer */}
-                      <div className="w-full px-4 pb-4 flex justify-end items-center gap-4">
-                        <button
-                          className="font-bold text-gray-400"
-                          onClick={handleModeModelClear}
-                        >
-                          Clear
-                        </button>
-                        <button
-                          className="font-bold text-blue-500"
-                          onClick={handleModeModalDone}
-                        >
-                          Done
-                        </button>
-                      </div>
+
+                      {/* mode modal */}
+                      {modeModalOpen && (
+                        <div className="absolute w-full top-24 flex justify-center items-center flex-col gap-4 bg-gray-50 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white z-20">
+                          {/* header */}
+                          <div className="w-full pt-4 px-4">
+                            <input
+                              type="text"
+                              id="small-input"
+                              className="block w-full p-2 text-gray-900 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 border border-blue-500  focus:border-blue-500 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white outline-none"
+                              placeholder="Search Party"
+                              value={modeSearchTerm}
+                              onChange={(e) =>
+                                setModeSearchTerm(e.target.value)
+                              }
+                            />
+                          </div>
+                          <hr className="w-full" />
+                          {/* body */}
+                          <div className="w-full flex flex-col gap-2 px-4 max-h-60 overflow-y-auto">
+                            {filteredModes.map((mode) => (
+                              <div
+                                key={mode?._id}
+                                className="flex items-center w-full"
+                              >
+                                <input
+                                  id={mode._id}
+                                  type="checkbox"
+                                  value={mode._id}
+                                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
+                                  checked={modeFilter.includes(mode._id)}
+                                  onChange={(e) => {
+                                    if (e.target.checked) {
+                                      setModeFilter([...modeFilter, mode._id]);
+                                    }
+                                    if (!e.target.checked) {
+                                      setModeFilter(
+                                        modeFilter.filter(
+                                          (id) => id !== mode._id
+                                        )
+                                      );
+                                    }
+                                  }}
+                                />
+                                <label
+                                  htmlFor={mode._id}
+                                  className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                >
+                                  {mode.Name}
+                                </label>
+                              </div>
+                            ))}
+                            <div className="flex justify-center items-center w-full flex-col gap-4">
+                              <Link
+                                className="text-green-500 font-bold hover:underline"
+                                to={"/dashboard/modes"}
+                              >
+                                Add Mode
+                              </Link>
+                            </div>
+                          </div>
+                          <hr className="w-full" />
+                          {/* footer */}
+                          <div className="w-full px-4 pb-4 flex justify-end items-center gap-4">
+                            <button
+                              className="font-bold text-gray-400"
+                              onClick={handleModeModelClear}
+                            >
+                              Clear
+                            </button>
+                            <button
+                              className="font-bold text-blue-500"
+                              onClick={handleModeModalDone}
+                            >
+                              Done
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              </div>
-              {/* date filter */}
-              <div className="flex justify-between w-full items-center py-4 gap-4 flex-wrap">
-                {/* start date */}
-                <div className="flex justify-end items-start flex-col gap-2 flex-1 min-w-48 min-h-20">
-                  <label
-                    htmlFor="formDate"
-                    className="text-sm font-semibold text-gray-900 dark:text-white"
-                  >
-                    Start Date
-                  </label>
-                  <input
-                    id="formDate"
-                    type="date"
-                    name="formDate"
-                    value={fromDate}
-                    onChange={(e) => setFromDate(e.target.value)}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 outline-none"
-                  />
-                </div>
-                {/* end date */}
-                <div className="flex justify-end items-start flex-col gap-2 flex-1 min-w-48 min-h-20">
-                  <label
-                    htmlFor="toDate"
-                    className="text-sm font-semibold text-gray-900 dark:text-white"
-                  >
-                    End Date
-                  </label>
-                  <input
-                    type="date"
-                    id="toDate"
-                    name="toDate"
-                    value={toDate}
-                    onChange={(e) => setToDate(e.target.value)}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 outline-none"
-                  />
-                </div>
-                {/* range date */}
-                <div className="flex justify-end items-start flex-col gap-2 flex-1 min-w-48 min-h-20">
-                  <label
-                    htmlFor="rangeDate"
-                    className="text-sm font-semibold text-gray-900 dark:text-white"
-                  >
-                    Select Range
-                  </label>
-                  <select
-                    value={range}
-                    onChange={(e) => {
-                      setRange(e.target.value);
-                    }}
-                    id="rangeDate"
-                    name="rangeDate"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 outline-none"
-                  >
-                    <option value="default">Choose a Range</option>
-                    <option value="this_month">This Month</option>
-                    <option value="last_month">Last Month</option>
-                    <option value="this_year">This Year</option>
-                    <option value="last_year">Last Year</option>
-                  </select>
-                </div>
-              </div>
+                  </div>
+                  {/* date filter */}
+                  <div className="flex justify-between w-full items-center py-4 gap-4 flex-wrap">
+                    {/* start date */}
+                    <div className="flex justify-end items-start flex-col gap-2 flex-1 min-w-48 min-h-20">
+                      <label
+                        htmlFor="formDate"
+                        className="text-sm font-semibold text-gray-900 dark:text-white"
+                      >
+                        Start Date
+                      </label>
+                      <input
+                        id="formDate"
+                        type="date"
+                        name="formDate"
+                        value={fromDate}
+                        onChange={(e) => setFromDate(e.target.value)}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 outline-none"
+                      />
+                    </div>
+                    {/* end date */}
+                    <div className="flex justify-end items-start flex-col gap-2 flex-1 min-w-48 min-h-20">
+                      <label
+                        htmlFor="toDate"
+                        className="text-sm font-semibold text-gray-900 dark:text-white"
+                      >
+                        End Date
+                      </label>
+                      <input
+                        type="date"
+                        id="toDate"
+                        name="toDate"
+                        value={toDate}
+                        onChange={(e) => setToDate(e.target.value)}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 outline-none"
+                      />
+                    </div>
+                    {/* range date */}
+                    <div className="flex justify-end items-start flex-col gap-2 flex-1 min-w-48 min-h-20">
+                      <label
+                        htmlFor="rangeDate"
+                        className="text-sm font-semibold text-gray-900 dark:text-white"
+                      >
+                        Select Range
+                      </label>
+                      <select
+                        value={range}
+                        onChange={(e) => {
+                          setRange(e.target.value);
+                        }}
+                        id="rangeDate"
+                        name="rangeDate"
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 outline-none"
+                      >
+                        <option value="default">Choose a Range</option>
+                        <option value="this_month">This Month</option>
+                        <option value="last_month">Last Month</option>
+                        <option value="this_year">This Year</option>
+                        <option value="last_year">Last Year</option>
+                      </select>
+                    </div>
+                  </div>
+                </>
+              )}
               {/* search and action */}
               <div className="flex justify-between w-full items-center py-4 flex-wrap gap-4">
                 {/* search */}
@@ -1087,17 +1114,18 @@ export const Expenses = () => {
                   onClick={() => {
                     setShowCharts(true);
                   }}
-                  className={`bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded w-32 ${
+                  className={`bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded flex justify-center items-center gap-2 w-32 ${
                     filteredExpenses.length === 0 &&
                     "opacity-50 cursor-not-allowed"
                   }`}
                   disabled={filteredExpenses.length === 0}
                 >
+                  <FaChartColumn />
                   Reports
                 </button>
                 <button
                   onClick={resetHandler}
-                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-32"
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex justify-center items-center gap-2 w-32"
                 >
                   Reset Filters
                 </button>
