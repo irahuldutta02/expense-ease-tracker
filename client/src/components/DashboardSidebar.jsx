@@ -4,29 +4,16 @@ import { FaMoneyBill, FaSignOutAlt } from "react-icons/fa";
 import { FaUserGroup } from "react-icons/fa6";
 import { useDispatch } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
-import { useLogoutMutation } from "../redux/userApiSlice";
 import { logout } from "../redux/userSlice";
 
 export const DashboardSidebar = ({ sidebarOpen, onSidebarClose }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [logoutApi, { isLoading }] = useLogoutMutation();
-
-  const handleLogOut = async () => {
-    try {
-      const res = await logoutApi().unwrap();
-      toast.success(res.message);
-      dispatch(logout());
-      navigate("/sign-in");
-    } catch (error) {
-      toast.error(
-        error?.data?.message ||
-          error?.message ||
-          error?.error ||
-          "An error occurred"
-      );
-    }
+  const handleLogOut = () => {
+    dispatch(logout());
+    navigate("/sign-in");
+    toast.success("Logged out successfully!");
   };
 
   return (
@@ -96,14 +83,11 @@ export const DashboardSidebar = ({ sidebarOpen, onSidebarClose }) => {
               </li>
               <li>
                 <button
-                  className={`flex w-full items-center p-2 text-sm text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group cursor-pointer ${
-                    isLoading ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
+                  className="flex w-full items-center p-2 text-sm text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group cursor-pointer"
                   onClick={() => {
                     handleLogOut();
                     onSidebarClose();
                   }}
-                  disabled={isLoading}
                 >
                   <FaSignOutAlt size={20} />
                   <span className="ms-3">Logout</span>

@@ -1,6 +1,5 @@
+import { BACKEND_URL, MODE_URL } from "../constants";
 import { apiSlice } from "./apiSlice";
-import { MODE_URL } from "../constants";
-import { BACKEND_URL } from "../constants";
 
 export const modeApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -8,14 +7,13 @@ export const modeApiSlice = apiSlice.injectEndpoints({
       query: () => ({
         url: BACKEND_URL + `${MODE_URL}`,
         method: "GET",
-        credentials: "include",
       }),
     }),
     createMode: builder.mutation({
       query: (data) => ({
         url: BACKEND_URL + `${MODE_URL}`,
         method: "POST",
-        credentials: "include",
+
         body: data,
       }),
     }),
@@ -23,7 +21,7 @@ export const modeApiSlice = apiSlice.injectEndpoints({
       query: ({ id, data }) => ({
         url: BACKEND_URL + `${MODE_URL}/${id}`,
         method: "PUT",
-        credentials: "include",
+
         body: data,
       }),
     }),
@@ -31,7 +29,6 @@ export const modeApiSlice = apiSlice.injectEndpoints({
       query: (id) => ({
         url: BACKEND_URL + `${MODE_URL}/${id}`,
         method: "DELETE",
-        credentials: "include",
       }),
     }),
   }),

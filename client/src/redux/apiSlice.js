@@ -2,10 +2,19 @@
 import { fetchBaseQuery, createApi } from "@reduxjs/toolkit/query/react";
 import { BACKEND_URL } from "../constants.js";
 
-const baseQuery = fetchBaseQuery({ baseUrl: BACKEND_URL });
-
 export const apiSlice = createApi({
-  baseQuery,
+  baseQuery: fetchBaseQuery({
+    baseUrl: BACKEND_URL,
+    prepareHeaders: (headers, { getState }) => {
+      const token = getState().user?.userInfo?.token;
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+      }
+      headers.set("Content-Type", "application/json");
+      return headers;
+    },
+  }),
   tagTypes: ["rtk-query"],
+
   endpoints: (builder) => ({}),
 });

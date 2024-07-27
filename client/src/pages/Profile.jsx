@@ -103,6 +103,8 @@ export const Profile = () => {
       dispatch(setCredentials({ ...res.data }));
       toast.success("Password updated successfully");
       setIsChangingPassword(false);
+      setConfirmPassword("");
+      setPassword("");
     } catch (error) {
       console.error(error);
       toast.error(

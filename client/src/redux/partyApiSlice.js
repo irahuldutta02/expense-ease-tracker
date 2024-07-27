@@ -1,6 +1,5 @@
+import { BACKEND_URL, PARTY_URL } from "../constants";
 import { apiSlice } from "./apiSlice";
-import { PARTY_URL } from "../constants";
-import { BACKEND_URL } from "../constants";
 
 export const partyApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -8,14 +7,13 @@ export const partyApiSlice = apiSlice.injectEndpoints({
       query: () => ({
         url: BACKEND_URL + `${PARTY_URL}`,
         method: "GET",
-        credentials: "include",
       }),
     }),
     createParty: builder.mutation({
       query: (data) => ({
         url: BACKEND_URL + `${PARTY_URL}`,
         method: "POST",
-        credentials: "include",
+
         body: data,
       }),
     }),
@@ -23,7 +21,7 @@ export const partyApiSlice = apiSlice.injectEndpoints({
       query: ({ id, data }) => ({
         url: BACKEND_URL + `${PARTY_URL}/${id}`,
         method: "PUT",
-        credentials: "include",
+
         body: data,
       }),
     }),
@@ -31,7 +29,6 @@ export const partyApiSlice = apiSlice.injectEndpoints({
       query: (id) => ({
         url: BACKEND_URL + `${PARTY_URL}/${id}`,
         method: "DELETE",
-        credentials: "include",
       }),
     }),
   }),
