@@ -252,7 +252,11 @@ export const Expenses = () => {
       const res = await createExpense(expense);
       if (res?.data?.status === 201) {
         toast.success("Expense created successfully");
-        handleModalClose();
+        handleResetForm();
+        refetch();
+        modesRefetch();
+        categoriesRefetch();
+        partiesRefetch();
       }
     } catch (error) {
       console.error("Error creating expense", error);
@@ -367,31 +371,31 @@ export const Expenses = () => {
       >
         <td
           scope="row"
-          className="px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white border-r border-gray-300 dark:border-gray-700"
+          className="p-4 border-r whitespace-nowrap border-gray-300 dark:border-gray-700 text-[16px] font-semibold"
         >
-          {convertToReadableDateString(expense?.Date)} <br />
-          {convertTo12HourTime(expense?.Date)}
+          <p>{convertToReadableDateString(expense?.Date)}</p>
+          <p className="font-normal text-sm mt-1">
+            {convertTo12HourTime(expense?.Date)}
+          </p>
         </td>
-        <td className="px-6 py-4 border-r whitespace-nowrap border-gray-300 dark:border-gray-700">
-          {expense?.Remark}
+        <td className="p-4 border-r whitespace-nowrap border-gray-300 dark:border-gray-700 text-[16px] font-semibold">
+          <p>{expense?.Party?.Name}</p>
+          <p className="font-normal text-sm mt-1 max-w-44 text-wrap">
+            {expense?.Remark}
+          </p>
         </td>
-        <td className="px-6 py-4 border-r whitespace-nowrap border-gray-300 dark:border-gray-700">
-          {expense?.Party?.Name}
+        <td className="p-4 border-r whitespace-nowrap border-gray-300 dark:border-gray-700 text-[16px] font-semibold">
+          <p>{expense?.Category?.Name}</p>
+          <p className="font-normal text-sm mt-1">{expense?.Mode?.Name}</p>
         </td>
-        <td className="px-6 py-4 border-r whitespace-nowrap border-gray-300 dark:border-gray-700">
-          {expense?.Category?.Name}
-        </td>
-        <td className="px-6 py-4 border-r whitespace-nowrap border-gray-300 dark:border-gray-700">
-          {expense?.Mode?.Name}
-        </td>
-        <td className="px-6 py-4 border-r whitespace-nowrap border-gray-300 dark:border-gray-700">
+        <td className="p-4 border-r whitespace-nowrap border-gray-300 dark:border-gray-700 text-[16px] font-semibold">
           <div className="w-24">
             ₹{" "}
             <span className="text-green-500 font-bold">{expense?.Cash_In}</span>
             <span className="text-red-500 font-bold">{expense?.Cash_Out}</span>
           </div>
         </td>
-        <td className="px-6 py-4 border-r whitespace-nowrap border-gray-300 dark:border-gray-700">
+        <td className="p-4 border-r whitespace-nowrap border-gray-300 dark:border-gray-700 text-[16px] font-semibold">
           <div className="w-24">
             ₹ {roundToTwoDecimalPlaces(expense?.balance)}
           </div>
@@ -1151,16 +1155,10 @@ export const Expenses = () => {
                           Date & Time
                         </th>
                         <th scope="col" className="px-6 py-3 text-center">
-                          Detail
+                          Party & Detail
                         </th>
                         <th scope="col" className="px-6 py-3 text-center">
-                          Party
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-center">
-                          Category
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-center">
-                          Mode
+                          Category & Mode
                         </th>
                         <th scope="col" className="px-6 py-3 text-center">
                           Amount
