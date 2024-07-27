@@ -37,10 +37,13 @@ cloudinaryRoutes.post(
   upload.single("my_file"),
   async (req, res) => {
     try {
+      if (!req.file) {
+        return res.status(400).send({ message: "No file uploaded!" });
+      }
+
       const b64 = Buffer.from(req.file.buffer).toString("base64");
       const dataURI = `data:${req.file.mimetype};base64,${b64}`;
 
-      // Extract the file extension and determine resource type
       const fileExtension = path.extname(req.file.originalname);
       const fileName = path.basename(req.file.originalname, fileExtension);
       const publicId = `${fileName}-${Date.now()}${fileExtension}`;

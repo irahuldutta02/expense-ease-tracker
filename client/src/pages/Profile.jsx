@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { useUpdateUserProfileMutation } from "../redux/userApiSlice";
 import { setCredentials } from "../redux/userSlice";
+import { FileUpload } from "../components/FileUpload";
 
 export const Profile = () => {
   const dispatch = useDispatch();
@@ -131,7 +132,7 @@ export const Profile = () => {
             {/* Avatar */}
             <div className="flex justify-center items-center gap-4 w-full max-w-sm ">
               <img
-                src={currentUser?.avatar}
+                src={avatar}
                 alt="Avatar"
                 className="w-32 h-32 rounded-full border-2"
               />
@@ -191,13 +192,11 @@ export const Profile = () => {
                 />
               </div>
               {/* avatar */}
-              <div className="flex justify-center items-center gap-4 w-full max-w-sm">
-                <input
-                  type="text"
-                  className="block outline-none w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Avatar"
-                  value={avatar}
-                  onChange={(e) => setAvatar(e.target.value)}
+              <div className="flex justify-center items-center gap-2 w-full max-w-sm">
+                <FileUpload
+                  onSetFileUrl={setAvatar}
+                  type="single-image"
+                  page="profile"
                 />
               </div>
               {/* Save Button */}
