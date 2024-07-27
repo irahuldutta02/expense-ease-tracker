@@ -38,7 +38,7 @@ const SingleImageModalForm = ({ onSetFileUrl }) => {
         {
           loading: "Uploading...",
           success: (res) => {
-            onSetFileUrl(res.data.url);
+            onSetFileUrl(res?.data?.secure_url);
             return "File uploaded successfully!";
           },
           error: "Failed to upload file!",
