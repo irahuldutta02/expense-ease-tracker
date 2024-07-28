@@ -8,3 +8,4 @@ export const EXPENSE_URL = "/api/expense";
 export const MODE_URL = "/api/mode";
 export const CATEGORY_URL = "/api/category";
 export const PARTY_URL = "/api/party";
+export const INSIGHT_URL = "/api/insight";

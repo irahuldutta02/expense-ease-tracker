@@ -1,3 +1,4 @@
+import moment from "moment";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import {
@@ -10,8 +11,11 @@ import {
   FaSearch,
   FaTimes,
 } from "react-icons/fa";
+import { FaChartColumn } from "react-icons/fa6";
 import { MdDelete, MdEditSquare } from "react-icons/md";
 import { Link } from "react-router-dom";
+import ChartsModel from "../components/ChartsModel";
+import CustomSelect from "../components/CustomSelect";
 import { ConfirmationModelContext } from "../context/ContextProvider";
 import { useGetCategoriesQuery } from "../redux/categoryApiSlice";
 import {
@@ -25,10 +29,7 @@ import { useGetPartiesQuery } from "../redux/partyApiSlice";
 import { convertTo12HourTime } from "../utils/convertTo12HourTime";
 import { convertToReadableDateString } from "../utils/convertToReadableDateString";
 import { roundToTwoDecimalPlaces } from "../utils/roundToTwoDecimalPlaces";
-import ChartsModel from "../components/ChartsModel";
-import moment from "moment";
-import CustomSelect from "../components/CustomSelect";
-import { FaChartColumn } from "react-icons/fa6";
+import { AiInsightsModel } from "../components/AiInsightsModel";
 
 export const Expenses = () => {
   const { data, isLoading, isError, refetch } = useGetExpensesQuery();
@@ -69,6 +70,8 @@ export const Expenses = () => {
   const [range, setRange] = useState("default");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
+
+  const [showAiInsightsModel, setShowAiInsightsModel] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 20;
@@ -592,6 +595,14 @@ export const Expenses = () => {
     setModeModalOpen(false);
   };
 
+  useEffect(() => {
+    if (addExpenseModal || showCharts || showAiInsightsModel) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [addExpenseModal, showCharts, showAiInsightsModel]);
+
   return (
     <>
       <div className="flex justify-start items-center flex-col gap-4 w-full">
@@ -1112,13 +1123,29 @@ export const Expenses = () => {
                   </div>
                 </div>
               </div>
-              {/* charts and reset filter btn */}
-              <div className="flex justify-end items-center w-full gap-4">
+              {/* ai insights, charts and reset filter btn */}
+              <div className="flex justify-end items-center w-full gap-4 flex-wrap">
+                <button
+                  className="hover:brightness-110 hover:animate-pulse font-bold py-2 px-4 w-28 rounded bg-gradient-to-r from-blue-500 to-pink-500 text-white whitespace-nowrap"
+                  onClick={() => {
+                    if (filteredExpenses.length === 0) {
+                      toast.error("No Data to show Ai Insight");
+                      return;
+                    }
+                    if (fromDate.trim() === "" || toDate.trim() === "") {
+                      toast.error("Please select date range");
+                      return;
+                    }
+                    setShowAiInsightsModel(true);
+                  }}
+                >
+                  Ai Insight
+                </button>
                 <button
                   onClick={() => {
                     setShowCharts(true);
                   }}
-                  className={`bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded flex justify-center items-center gap-2 w-32 ${
+                  className={`bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded flex justify-center whitespace-nowrap items-center gap-2 w-28 ${
                     filteredExpenses.length === 0 &&
                     "opacity-50 cursor-not-allowed"
                   }`}
@@ -1129,7 +1156,7 @@ export const Expenses = () => {
                 </button>
                 <button
                   onClick={resetHandler}
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex justify-center items-center gap-2 w-32"
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex justify-center whitespace-nowrap items-center gap-2 w-28"
                 >
                   Reset Filters
                 </button>
@@ -1500,6 +1527,15 @@ export const Expenses = () => {
                 <ChartsModel
                   expenses={filteredExpenses}
                   closeShowCharts={closeShowCharts}
+                />
+              )}
+
+              {/* ai insights */}
+              {showAiInsightsModel && (
+                <AiInsightsModel
+                  startDate={fromDate}
+                  endDate={toDate}
+                  onCloseModel={() => setShowAiInsightsModel(false)}
                 />
               )}
             </>
