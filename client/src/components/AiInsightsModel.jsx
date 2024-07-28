@@ -58,7 +58,7 @@ export const AiInsightsModel = ({ startDate, endDate, onCloseModel }) => {
               </button>
             </div>
             {/* body */}
-            <div className="p-6 space-y-6 w-full">
+            <div className="p-6 h-[80vh] space-y-6 w-full overflow-y-auto">
               {isLoading && (
                 <>
                   <div className="flex justify-center items-center flex-col gap-8 w-full p-4">
@@ -121,6 +121,20 @@ export const AiInsightsModel = ({ startDate, endDate, onCloseModel }) => {
                   {displayedText}
                 </ReactMarkdown>
               )}
+            </div>
+            {/* footer */}
+            <div className="flex justify-center items-center p-4 border-t rounded-b dark:border-gray-600 w-full">
+              <p>
+                Powered by{" "}
+                <a
+                  href="https://gemini.google.com/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-blue-500 hover:underline"
+                >
+                  Google Gemini
+                </a>{" "}
+              </p>
             </div>
           </div>
         </div>
