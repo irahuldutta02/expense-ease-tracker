@@ -60,4 +60,4 @@ npm run dev
 - **JWT (jsonwebtoken)**
 - **Multer**
 - **Nodemailer**
-- **Google Generative AI API**:
+- **Google Generative AI API**
