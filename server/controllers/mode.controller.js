@@ -121,4 +121,52 @@ const deleteMode = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { allListByUserId, createMode, updateMode, deleteMode };
+const getModeById = asyncHandler(async (req, res) => {
+  try {
+    const mode = await Mode.findById(req.params.id);
+
+    if (!mode) {
+      res.status(404);
+      throw new Error("Mode not found");
+    }
+
+    return res.status(200).json({
+      status: 200,
+      data: mode,
+    });
+  } catch (error) {
+    res.status(404);
+    throw new Error(error?.message || "Mode not found");
+  }
+});
+
+const getModeByName = asyncHandler(async (req, res) => {
+  try {
+    const mode = await Mode.findOne({
+      Name: req.params.name,
+      UserId: req?.user?._id,
+    });
+
+    if (!mode) {
+      res.status(404);
+      throw new Error("Mode not found");
+    }
+
+    return res.status(200).json({
+      status: 200,
+      data: mode,
+    });
+  } catch (error) {
+    res.status(404);
+    throw new Error(error?.message || "Mode not found");
+  }
+});
+
+module.exports = {
+  allListByUserId,
+  createMode,
+  updateMode,
+  deleteMode,
+  getModeById,
+  getModeByName,
+};
