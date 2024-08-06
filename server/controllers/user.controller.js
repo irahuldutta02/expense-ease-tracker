@@ -248,7 +248,6 @@ const resetPassword = asyncHandler(async (req, res) => {
       },
     });
   } catch (error) {
-    console.log(error);
     res.status(400);
     throw new Error("Invalid token");
   }
