@@ -8,12 +8,15 @@ import {
   FaEquals,
   FaMinus,
   FaPlus,
+  FaRegTimesCircle,
   FaSearch,
   FaTimes,
 } from "react-icons/fa";
 import { FaChartColumn } from "react-icons/fa6";
+import { IoReceiptSharp } from "react-icons/io5";
 import { MdDelete, MdEditSquare } from "react-icons/md";
 import { Link } from "react-router-dom";
+import { AiInsightsModel } from "../components/AiInsightsModel";
 import ChartsModel from "../components/ChartsModel";
 import CustomSelect from "../components/CustomSelect";
 import { ConfirmationModelContext } from "../context/ContextProvider";
@@ -29,7 +32,8 @@ import { useGetPartiesQuery } from "../redux/partyApiSlice";
 import { convertTo12HourTime } from "../utils/convertTo12HourTime";
 import { convertToReadableDateString } from "../utils/convertToReadableDateString";
 import { roundToTwoDecimalPlaces } from "../utils/roundToTwoDecimalPlaces";
-import { AiInsightsModel } from "../components/AiInsightsModel";
+import { FileUpload } from "../components/FileUpload";
+import { ImageModel } from "../components/ImageModel";
 
 export const Expenses = () => {
   const { data, isLoading, isError, refetch } = useGetExpensesQuery();
@@ -88,6 +92,10 @@ export const Expenses = () => {
   const [mode, setMode] = useState("");
   const [modeSearching, setModeSearching] = useState("");
   const [remark, setRemark] = useState("");
+  const [attachments, setAttachments] = useState([]);
+
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [showImageModalUrls, setShowImageModalUrls] = useState(null);
 
   const [partyFilter, setPartyFilter] = useState([]);
   const [categoryFilter, setCategoryFilter] = useState([]);
@@ -188,6 +196,7 @@ export const Expenses = () => {
     setMode(expense?.Mode?._id || "");
     setRemark(expense?.Remark);
     setAddExpenseModal(true);
+    setAttachments(expense?.attachments || []);
   };
 
   const handleCancelEditing = () => {
@@ -239,6 +248,7 @@ export const Expenses = () => {
     setMode("");
     setModeSearching("");
     setRemark("");
+    setAttachments([]);
   };
 
   const handleSaveExpense = async () => {
@@ -250,6 +260,7 @@ export const Expenses = () => {
       Category: category === "" ? null : category,
       Mode: mode === "" ? null : mode,
       Remark: remark,
+      attachments,
     };
     try {
       const res = await createExpense(expense);
@@ -276,6 +287,7 @@ export const Expenses = () => {
       Category: category === "" ? null : category,
       Mode: mode === "" ? null : mode,
       Remark: remark,
+      attachments,
     };
     try {
       const res = await updateExpense({ id: editId, data: expense });
@@ -341,6 +353,17 @@ export const Expenses = () => {
     setMode(expense?.Mode?._id || "");
     setRemark(expense?.Remark);
     setAddExpenseModal(true);
+    setAttachments(expense?.attachments || []);
+  };
+
+  const handleShowImageModal = (urlArray) => {
+    setShowImageModal(true);
+    setShowImageModalUrls(urlArray);
+  };
+
+  const handleCloseImageModal = () => {
+    setShowImageModal(false);
+    setShowImageModalUrls(null);
   };
 
   // render the table
@@ -381,10 +404,23 @@ export const Expenses = () => {
             {convertTo12HourTime(expense?.Date)}
           </p>
         </td>
-        <td className="p-4 border-r whitespace-nowrap border-gray-300 dark:border-gray-700 text-[16px] font-semibold">
+        <td className="p-4 border-r whitespace-nowrap border-gray-300 dark:border-gray-700 text-[16px] font-semibold relative">
           <p>{expense?.Party?.Name}</p>
           <p className="font-normal text-sm mt-1 max-w-44 text-wrap">
             {expense?.Remark}
+          </p>
+          <p className="font-normal text-sm mt-1 absolute right-2 top-2">
+            {expense?.attachments?.length > 0 && (
+              <button
+                className="text-blue-400 font-bold rounded hover:transform hover:scale-125 transition duration-300 ease-in-out"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleShowImageModal(expense?.attachments);
+                }}
+              >
+                <IoReceiptSharp size={20} />
+              </button>
+            )}
           </p>
         </td>
         <td className="p-4 border-r whitespace-nowrap border-gray-300 dark:border-gray-700 text-[16px] font-semibold">
@@ -596,12 +632,12 @@ export const Expenses = () => {
   };
 
   useEffect(() => {
-    if (addExpenseModal || showCharts || showAiInsightsModel) {
+    if (addExpenseModal || showCharts || showAiInsightsModel || showImageModal) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "auto";
     }
-  }, [addExpenseModal, showCharts, showAiInsightsModel]);
+  }, [addExpenseModal, showCharts, showAiInsightsModel, showImageModal]);
 
   return (
     <>
@@ -1271,7 +1307,7 @@ export const Expenses = () => {
                   ></div>
                   <div
                     id="close-model"
-                    className="fixed inset-0 flex justify-center items-start sm:items-center sm:m-4 overflow-auto z-50"
+                    className="fixed inset-0 flex justify-center items-start sm:items-center sm:m-4 overflow-y-auto sm:overflow-hidden z-50"
                     onClick={(e) => {
                       if (e.target.id === "close-model") {
                         handleModalClose();
@@ -1285,7 +1321,7 @@ export const Expenses = () => {
                       !modesIsError &&
                       !categoriesIsError &&
                       !partiesIsError && (
-                        <div className="w-full max-w-2xl">
+                        <div className="w-full max-w-2xl ">
                           {/* <!-- Modal content --> */}
                           <form className="relative bg-white sm:rounded-lg shadow dark:bg-gray-700">
                             {/* <!-- Modal header --> */}
@@ -1318,7 +1354,7 @@ export const Expenses = () => {
                               </button>
                             </div>
                             {/* <!-- Modal body --> */}
-                            <div className="p-6 space-y-6">
+                            <div className="p-6 space-y-6 sm:max-h-[70vh] overflow-y-auto">
                               <div className="grid grid-cols-6 gap-6">
                                 {/* expense type */}
                                 <div className="col-span-6 sm:col-span-3">
@@ -1429,6 +1465,58 @@ export const Expenses = () => {
                                     onChange={(e) => setRemark(e.target.value)}
                                   ></textarea>
                                 </div>
+
+                                {/* attachments */}
+                                <div className="col-span-6">
+                                  <label
+                                    htmlFor="remark"
+                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                  >
+                                    Attachments
+                                  </label>
+                                  <div className="flex flex-col gap-2">
+                                    <FileUpload
+                                      type="multiple-image"
+                                      page="expense"
+                                      onSetFileUrl={(urlArray) => {
+                                        setAttachments([
+                                          ...attachments,
+                                          ...urlArray,
+                                        ]);
+                                      }}
+                                    />
+                                    {attachments.length > 0 && (
+                                      <div className="flex items-center justify-start gap-3 border border-gray-300 rounded-lg p-4 dark:border-gray-600">
+                                        {attachments.map(
+                                          (attachment, index) => (
+                                            <div
+                                              key={index}
+                                              className="relative"
+                                            >
+                                              <img
+                                                src={attachment}
+                                                alt="Attachment"
+                                                className="h-16 rounded-lg"
+                                              />
+                                              <button
+                                                className="text-white font-bold absolute right-[-10px] top-[-10px] bg-blue-500 rounded-full p-1"
+                                                onClick={() => {
+                                                  setAttachments(
+                                                    attachments.filter(
+                                                      (_, i) => i !== index
+                                                    )
+                                                  );
+                                                }}
+                                              >
+                                                <FaRegTimesCircle size={10} />
+                                              </button>
+                                            </div>
+                                          )
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
                               </div>
                             </div>
                             {/* <!-- Modal footer --> */}
@@ -1538,6 +1626,12 @@ export const Expenses = () => {
                   onCloseModel={() => setShowAiInsightsModel(false)}
                 />
               )}
+
+              <ImageModel
+                showImageModel={showImageModal}
+                closeImageModel={handleCloseImageModal}
+                images={showImageModalUrls}
+              />
             </>
           )}
         </div>

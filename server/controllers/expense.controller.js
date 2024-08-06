@@ -56,6 +56,7 @@ const createExpense = asyncHandler(async (req, res) => {
       Cash_In,
       Cash_Out,
       Remark,
+      attachments,
     } = req.body;
 
     const UserId = req.user._id;
@@ -71,6 +72,7 @@ const createExpense = asyncHandler(async (req, res) => {
       Cash_In,
       Cash_Out,
       Remark,
+      attachments,
     });
 
     const createdExpense = await expense.save();
@@ -97,6 +99,7 @@ const updateExpense = asyncHandler(async (req, res) => {
       Cash_In,
       Cash_Out,
       Remark,
+      attachments,
     } = req.body;
 
     const UserId = req.user._id;
@@ -114,15 +117,16 @@ const updateExpense = asyncHandler(async (req, res) => {
     }
 
     if (expense) {
-      expense.Amount = Amount;
-      expense.Date = Date;
-      expense.Mode = Mode;
-      expense.Category = Category;
-      expense.Party = Party;
-      expense.Description = Description;
-      expense.Cash_In = Cash_In;
-      expense.Cash_Out = Cash_Out;
-      expense.Remark = Remark;
+      expense.Amount = Amount ?? expense.Amount;
+      expense.Date = Date ?? expense.Date;
+      expense.Mode = Mode ?? expense.Mode;
+      expense.Category = Category ?? expense.Category;
+      expense.Party = Party ?? expense.Party;
+      expense.Description = Description ?? expense.Description;
+      expense.Cash_In = Cash_In ?? expense.Cash_In;
+      expense.Cash_Out = Cash_Out ?? expense.Cash_Out;
+      expense.Remark = Remark ?? expense.Remark;
+      expense.attachments = attachments ?? expense.attachments;
 
       const updatedExpense = await expense.save();
 

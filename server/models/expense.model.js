@@ -40,6 +40,10 @@ const expenseSchema = new Schema(
       type: Number,
       required: false,
     },
+    attachments: {
+      type: Array,
+      required: false,
+    },
   },
   { timestamps: true }
 );
