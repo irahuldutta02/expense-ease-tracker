@@ -14,14 +14,17 @@ export const AutoLogout = () => {
   const [getMe] = useGetMeMutation();
 
   useEffect(() => {
+    let ignore = false;
     const checkUserSession = async () => {
       if (userInfo) {
         try {
           await getMe().unwrap();
         } catch (error) {
-          dispatch(logout());
-          navigate("/sign-in");
-          toast.error("Auto Logout Triggered!");
+          if (!ignore) {
+            dispatch(logout());
+            navigate("/sign-in");
+            toast.error("Auto Logout Triggered!");
+          }
         }
       }
     };
@@ -29,6 +32,9 @@ export const AutoLogout = () => {
     if (userInfo) {
       checkUserSession();
     }
+    return () => {
+      ignore = true;
+    };
   }, [pathname, userInfo, getMe, dispatch, navigate]);
 
   return null;
