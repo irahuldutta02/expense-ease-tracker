@@ -9,18 +9,10 @@ export const ConfirmationModal = () => {
     <>
       {confirmationModel && (
         <>
-          <div
-            className="fixed inset-0 bg-black bg-opacity-70 z-[60]"
-            onClick={closeConfirmationModel}
-          ></div>
+          <div className="fixed inset-0 bg-black bg-opacity-70 z-[60]"></div>
           <div
             id="close-model"
             className="fixed inset-0 flex justify-center items-center sm:m-4 overflow-auto z-[70]"
-            onClick={(e) => {
-              if (e.target.id === "close-model") {
-                closeConfirmationModel();
-              }
-            }}
           >
             <div className="bg-white dark:bg-gray-900 dark:text-white w-full p-4 m-4 rounded-lg shadow-lg max-w-sm">
               <div className="flex justify-center items-center flex-col gap-4">
