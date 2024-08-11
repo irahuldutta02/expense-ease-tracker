@@ -6,18 +6,10 @@ export const ImageModel = ({ showImageModel, closeImageModel, images }) => {
       {/* add expense modal */}
       {showImageModel && (
         <>
-          <div
-            className="fixed inset-0 bg-black bg-opacity-70 z-50"
-            onClick={closeImageModel}
-          ></div>
+          <div className="fixed inset-0 bg-black bg-opacity-70 z-50"></div>
           <div
             id="close-model"
             className="fixed inset-0 flex justify-center items-start sm:items-center sm:m-4 overflow-y-auto sm:overflow-hidden z-50"
-            onClick={(e) => {
-              if (e.target.id === "close-model") {
-                closeImageModel();
-              }
-            }}
           >
             <div className="w-full max-w-6xl">
               {/* <!-- Modal content --> */}

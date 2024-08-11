@@ -197,18 +197,10 @@ const ChartsModel = ({ expenses, closeShowCharts }) => {
 
   return (
     <>
-      <div
-        className="fixed inset-0 bg-black bg-opacity-70 z-50"
-        onClick={closeShowCharts}
-      ></div>
+      <div className="fixed inset-0 bg-black bg-opacity-70 z-50"></div>
       <div
         id="close-model"
         className="fixed inset-0 flex justify-center items-start sm:m-4 sm:rounded-lg overflow-auto z-50"
-        onClick={(e) => {
-          if (e.target.id === "close-model") {
-            closeShowCharts();
-          }
-        }}
       >
         <div className="w-full">
           <div className="bg-white sm:rounded-lg shadow dark:bg-gray-700 min-h-screen sm:min-h-[95vh]">

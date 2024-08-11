@@ -632,7 +632,12 @@ export const Expenses = () => {
   };
 
   useEffect(() => {
-    if (addExpenseModal || showCharts || showAiInsightsModel || showImageModal) {
+    if (
+      addExpenseModal ||
+      showCharts ||
+      showAiInsightsModel ||
+      showImageModal
+    ) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "auto";
@@ -1301,18 +1306,10 @@ export const Expenses = () => {
               {/* add expense modal */}
               {addExpenseModal && (
                 <>
-                  <div
-                    className="fixed inset-0 bg-black bg-opacity-70 z-50"
-                    onClick={handleModalClose}
-                  ></div>
+                  <div className="fixed inset-0 bg-black bg-opacity-70 z-50"></div>
                   <div
                     id="close-model"
                     className="fixed inset-0 flex justify-center items-start sm:items-center sm:m-4 overflow-y-auto sm:overflow-hidden z-50"
-                    onClick={(e) => {
-                      if (e.target.id === "close-model") {
-                        handleModalClose();
-                      }
-                    }}
                   >
                     {/* <!-- Edit user modal --> */}
                     {!partiesIsLoading &&
