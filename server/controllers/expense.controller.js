@@ -119,14 +119,14 @@ const updateExpense = asyncHandler(async (req, res) => {
     if (expense) {
       expense.Amount = Amount ?? expense.Amount;
       expense.Date = Date ?? expense.Date;
-      expense.Mode = Mode ?? expense.Mode;
-      expense.Category = Category ?? expense.Category;
-      expense.Party = Party ?? expense.Party;
-      expense.Description = Description ?? expense.Description;
-      expense.Cash_In = Cash_In ?? expense.Cash_In;
-      expense.Cash_Out = Cash_Out ?? expense.Cash_Out;
-      expense.Remark = Remark ?? expense.Remark;
-      expense.attachments = attachments ?? expense.attachments;
+      expense.Mode = Mode;
+      expense.Category = Category;
+      expense.Party = Party;
+      expense.Description = Description;
+      expense.Cash_In = Cash_In;
+      expense.Cash_Out = Cash_Out;
+      expense.Remark = Remark;
+      expense.attachments = attachments;
 
       const updatedExpense = await expense.save();
 
@@ -138,6 +138,57 @@ const updateExpense = asyncHandler(async (req, res) => {
       res.status(404);
       throw new Error("Expense not found");
     }
+  } catch (error) {
+    res.status(404);
+    throw new Error(error?.message || "Expense not found");
+  }
+});
+
+const bulkUpdateExpense = asyncHandler(async (req, res) => {
+  try {
+    const { ids, Party, Category, Mode } = req.body;
+
+    const UserId = req.user._id;
+
+    ids.forEach(async (id) => {
+      const expense = await Expense.findById(id);
+      if (!expense) {
+        res.status(404);
+        throw new Error("Expense not found");
+      }
+
+      if (expense.UserId.toString() !== UserId.toString()) {
+        res.status(401);
+        throw new Error("Not authorized to access this resource");
+      }
+    });
+
+    let updateObj = {};
+
+    if (Party) {
+      updateObj.Party = Party === "none" ? null : Party;
+    }
+
+    if (Category) {
+      updateObj.Category = Category === "none" ? null : Category;
+    }
+
+    if (Mode) {
+      updateObj.Mode = Mode === "none" ? null : Mode;
+    }
+
+    const updatedExpenses = await Expense.updateMany(
+      {
+        _id: { $in: ids },
+      },
+      updateObj
+    );
+
+    res.status(200).json({
+      status: 200,
+      message: "Expenses updated successfully",
+      data: updatedExpenses,
+    });
   } catch (error) {
     res.status(404);
     throw new Error(error?.message || "Expense not found");
@@ -177,4 +228,5 @@ module.exports = {
   createExpense,
   updateExpense,
   deleteExpense,
+  bulkUpdateExpense,
 };

@@ -19,6 +19,8 @@ import { Link } from "react-router-dom";
 import { AiInsightsModel } from "../components/AiInsightsModel";
 import ChartsModel from "../components/ChartsModel";
 import CustomSelect from "../components/CustomSelect";
+import { FileUpload } from "../components/FileUpload";
+import { ImageModel } from "../components/ImageModel";
 import { ConfirmationModelContext } from "../context/ContextProvider";
 import { useGetCategoriesQuery } from "../redux/categoryApiSlice";
 import {
@@ -32,8 +34,6 @@ import { useGetPartiesQuery } from "../redux/partyApiSlice";
 import { convertTo12HourTime } from "../utils/convertTo12HourTime";
 import { convertToReadableDateString } from "../utils/convertToReadableDateString";
 import { roundToTwoDecimalPlaces } from "../utils/roundToTwoDecimalPlaces";
-import { FileUpload } from "../components/FileUpload";
-import { ImageModel } from "../components/ImageModel";
 
 export const Expenses = () => {
   const { data, isLoading, isError, refetch } = useGetExpensesQuery();
@@ -111,6 +111,8 @@ export const Expenses = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
+
+  const [selectedBulkExpenses, setSelectedBulkExpenses] = useState([]);
 
   const [showCharts, setShowCharts] = useState(false);
   const closeShowCharts = () => {
@@ -366,11 +368,11 @@ export const Expenses = () => {
     setShowImageModalUrls(null);
   };
 
+  const start = (currentPage - 1) * rowsPerPage;
+  const end = start + rowsPerPage;
+
   // render the table
   const renderTable = () => {
-    const start = (currentPage - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
-
     if (filteredExpenses?.slice(start, end).length === 0) {
       return (
         <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 cursor-pointer">
@@ -395,6 +397,37 @@ export const Expenses = () => {
           handleEditing(expense);
         }}
       >
+        <td className="p-4 border-r whitespace-nowrap border-gray-300 dark:border-gray-700 text-[16px] font-semibold relative">
+          <span
+            className="flex items-center justify-center gap-2"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <input
+              id="default-checkbox"
+              type="checkbox"
+              value=""
+              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded"
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+              checked={selectedBulkExpenses.includes(expense?._id)}
+              onChange={() => {
+                if (selectedBulkExpenses.includes(expense?._id)) {
+                  setSelectedBulkExpenses(
+                    selectedBulkExpenses.filter((id) => id !== expense?._id)
+                  );
+                } else {
+                  setSelectedBulkExpenses([
+                    ...selectedBulkExpenses,
+                    expense?._id,
+                  ]);
+                }
+              }}
+            />
+          </span>
+        </td>
         <td
           scope="row"
           className="p-4 border-r whitespace-nowrap border-gray-300 dark:border-gray-700 text-[16px] font-semibold"
@@ -477,89 +510,6 @@ export const Expenses = () => {
     ));
   };
 
-  // for date range filter
-  useEffect(() => {
-    if (range === "default") return;
-    let fromDate = "";
-    let toDate = "";
-
-    if (range === "today") {
-      fromDate = moment().format("YYYY-MM-DD");
-      toDate = moment().format("YYYY-MM-DD");
-    } else if (range === "yesterday") {
-      fromDate = moment().subtract(1, "days").format("YYYY-MM-DD");
-      toDate = moment().subtract(1, "days").format("YYYY-MM-DD");
-    } else if (range === "this_month") {
-      fromDate = moment().startOf("month").format("YYYY-MM-DD");
-      toDate = moment().format("YYYY-MM-DD");
-    } else if (range === "last_month") {
-      fromDate = moment()
-        .subtract(1, "months")
-        .startOf("month")
-        .format("YYYY-MM-DD");
-      toDate = moment()
-        .subtract(1, "months")
-        .endOf("month")
-        .format("YYYY-MM-DD");
-    } else if (range === "this_year") {
-      fromDate = moment().startOf("year").format("YYYY-MM-DD");
-      toDate = moment().format("YYYY-MM-DD");
-    } else if (range === "last_year") {
-      fromDate = moment()
-        .subtract(1, "years")
-        .startOf("year")
-        .format("YYYY-MM-DD");
-      toDate = moment().subtract(1, "years").endOf("year").format("YYYY-MM-DD");
-    }
-
-    setFromDate(fromDate);
-    setToDate(toDate);
-  }, [range]);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, fromDate, toDate, range]);
-
-  // for hiding the body overflow when modal is open
-  useEffect(() => {
-    if (addExpenseModal || showCharts) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
-  }, [addExpenseModal, showCharts]);
-
-  // to close all modals when click outside other than the modal
-  useEffect(() => {
-    const closeModals = (e) => {
-      // close party modal if not clicking on the party modal
-      if (
-        partyModalOpen &&
-        !document.getElementById("partyFilter").contains(e.target)
-      ) {
-        setPartyModalOpen(false);
-      }
-
-      // close category modal if not clicking on the category modal
-      if (
-        categoryModalOpen &&
-        !document.getElementById("categoryFilter").contains(e.target)
-      ) {
-        setCategoryModalOpen(false);
-      }
-
-      // close mode modal if not clicking on the mode modal
-      if (
-        modeModalOpen &&
-        !document.getElementById("modeFilter").contains(e.target)
-      ) {
-        setModeModalOpen(false);
-      }
-    };
-    window.addEventListener("click", closeModals);
-    return () => window.removeEventListener("click", closeModals);
-  }, [categoryModalOpen, modeModalOpen, partyModalOpen]);
-
   const filteredParties = parties.filter((party) => {
     if (partySearchTerm.trim() === "") {
       return party;
@@ -630,6 +580,112 @@ export const Expenses = () => {
     setModeSearchTerm("");
     setModeModalOpen(false);
   };
+
+  // for date range filter
+  useEffect(() => {
+    if (range === "default") return;
+    let fromDate = "";
+    let toDate = "";
+
+    if (range === "today") {
+      fromDate = moment().format("YYYY-MM-DD");
+      toDate = moment().format("YYYY-MM-DD");
+    } else if (range === "yesterday") {
+      fromDate = moment().subtract(1, "days").format("YYYY-MM-DD");
+      toDate = moment().subtract(1, "days").format("YYYY-MM-DD");
+    } else if (range === "this_month") {
+      fromDate = moment().startOf("month").format("YYYY-MM-DD");
+      toDate = moment().format("YYYY-MM-DD");
+    } else if (range === "last_month") {
+      fromDate = moment()
+        .subtract(1, "months")
+        .startOf("month")
+        .format("YYYY-MM-DD");
+      toDate = moment()
+        .subtract(1, "months")
+        .endOf("month")
+        .format("YYYY-MM-DD");
+    } else if (range === "this_year") {
+      fromDate = moment().startOf("year").format("YYYY-MM-DD");
+      toDate = moment().format("YYYY-MM-DD");
+    } else if (range === "last_year") {
+      fromDate = moment()
+        .subtract(1, "years")
+        .startOf("year")
+        .format("YYYY-MM-DD");
+      toDate = moment().subtract(1, "years").endOf("year").format("YYYY-MM-DD");
+    }
+
+    setFromDate(fromDate);
+    setToDate(toDate);
+  }, [range]);
+
+  // reset pagination when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [
+    searchTerm,
+    fromDate,
+    toDate,
+    range,
+    partyFilter,
+    categoryFilter,
+    modeFilter,
+  ]);
+
+  // reset selected bulk expenses when page changes
+  useEffect(() => {
+    setSelectedBulkExpenses([]);
+  }, [
+    currentPage,
+    partyFilter,
+    categoryFilter,
+    modeFilter,
+    searchTerm,
+    fromDate,
+    toDate,
+    range,
+  ]);
+
+  // for hiding the body overflow when modal is open
+  useEffect(() => {
+    if (addExpenseModal || showCharts) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [addExpenseModal, showCharts]);
+
+  // to close all modals when click outside other than the modal
+  useEffect(() => {
+    const closeModals = (e) => {
+      // close party modal if not clicking on the party modal
+      if (
+        partyModalOpen &&
+        !document.getElementById("partyFilter").contains(e.target)
+      ) {
+        setPartyModalOpen(false);
+      }
+
+      // close category modal if not clicking on the category modal
+      if (
+        categoryModalOpen &&
+        !document.getElementById("categoryFilter").contains(e.target)
+      ) {
+        setCategoryModalOpen(false);
+      }
+
+      // close mode modal if not clicking on the mode modal
+      if (
+        modeModalOpen &&
+        !document.getElementById("modeFilter").contains(e.target)
+      ) {
+        setModeModalOpen(false);
+      }
+    };
+    window.addEventListener("click", closeModals);
+    return () => window.removeEventListener("click", closeModals);
+  }, [categoryModalOpen, modeModalOpen, partyModalOpen]);
 
   useEffect(() => {
     if (
@@ -1219,6 +1275,42 @@ export const Expenses = () => {
                   <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                       <tr>
+                        <th scope="col" className="px-6 py-3 text-center">
+                          <span
+                            className="flex items-center justify-center gap-2"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                            }}
+                          >
+                            <input
+                              id="default-checkbox"
+                              type="checkbox"
+                              value=""
+                              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                              checked={
+                                selectedBulkExpenses.length ===
+                                filteredExpenses?.slice(start, end).length
+                              }
+                              onChange={() => {
+                                if (
+                                  selectedBulkExpenses.length ===
+                                  filteredExpenses?.slice(start, end).length
+                                ) {
+                                  setSelectedBulkExpenses([]);
+                                } else {
+                                  setSelectedBulkExpenses(
+                                    filteredExpenses
+                                      ?.slice(start, end)
+                                      .map((expense) => expense?._id)
+                                  );
+                                }
+                              }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                              }}
+                            />
+                          </span>
+                        </th>
                         <th scope="col" className="px-6 py-3 text-center">
                           Date & Time
                         </th>
