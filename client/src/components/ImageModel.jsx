@@ -13,7 +13,7 @@ export const ImageModel = ({ showImageModel, closeImageModel, images }) => {
           >
             <div className="w-full max-w-6xl">
               {/* <!-- Modal content --> */}
-              <form className="relative bg-white sm:rounded-lg shadow dark:bg-gray-700">
+              <div className="relative bg-white sm:rounded-lg shadow dark:bg-gray-700">
                 {/* <!-- Modal header --> */}
                 <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
                   <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
@@ -51,7 +51,7 @@ export const ImageModel = ({ showImageModel, closeImageModel, images }) => {
                 </div>
                 {/* <!-- Modal footer --> */}
                 <div className="flex justify-center gap-4 items-center p-8 space-x-3 rtl:space-x-reverse border-t border-gray-200 rounded-b dark:border-gray-600"></div>
-              </form>
+              </div>
             </div>
           </div>
         </>

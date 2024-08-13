@@ -68,7 +68,7 @@ const CustomSelect = ({
           onFocus={() => setIsOpen(true)}
         />
         {isOpen && (
-          <div className="absolute z-10 mt-1 w-full max-h-48 overflow-y-auto bg-white dark:bg-gray-700 rounded-lg shadow-lg border border-gray-300 dark:border-gray-500 dropdown-custom-scrollbar">
+          <div className="absolute z-20 mt-1 w-full max-h-48 overflow-y-auto bg-white dark:bg-gray-700 rounded-lg shadow-lg border border-gray-300 dark:border-gray-500 dropdown-custom-scrollbar">
             {filteredOptions.map((option) => (
               <div
                 key={option._id}

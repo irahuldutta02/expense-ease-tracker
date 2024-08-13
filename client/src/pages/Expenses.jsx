@@ -12,7 +12,6 @@ import {
   FaSearch,
   FaTimes,
 } from "react-icons/fa";
-import { FaChartColumn } from "react-icons/fa6";
 import { IoReceiptSharp } from "react-icons/io5";
 import { MdDelete, MdEditSquare } from "react-icons/md";
 import { Link } from "react-router-dom";
@@ -34,6 +33,7 @@ import { useGetPartiesQuery } from "../redux/partyApiSlice";
 import { convertTo12HourTime } from "../utils/convertTo12HourTime";
 import { convertToReadableDateString } from "../utils/convertToReadableDateString";
 import { roundToTwoDecimalPlaces } from "../utils/roundToTwoDecimalPlaces";
+import { BulkActionModel } from "../components/BulkActionModel";
 
 export const Expenses = () => {
   const { data, isLoading, isError, refetch } = useGetExpensesQuery();
@@ -112,7 +112,13 @@ export const Expenses = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
 
+  const [showBulkActionModal, setShowBulkActionModal] = useState(false);
   const [selectedBulkExpenses, setSelectedBulkExpenses] = useState([]);
+  const closeBulkActionModal = () => {
+    setShowBulkActionModal(false);
+    setSelectedBulkExpenses([]);
+    refetch();
+  };
 
   const [showCharts, setShowCharts] = useState(false);
   const closeShowCharts = () => {
@@ -218,15 +224,6 @@ export const Expenses = () => {
     modesRefetch();
     categoriesRefetch();
     partiesRefetch();
-  };
-
-  const scrollToBottom = () => {
-    setTimeout(() => {
-      window.scrollTo({
-        top: document.documentElement.scrollHeight,
-        behavior: "instant",
-      });
-    }, 1);
   };
 
   const handleModalClose = () => {
@@ -397,7 +394,12 @@ export const Expenses = () => {
           handleEditing(expense);
         }}
       >
-        <td className="p-4 border-r whitespace-nowrap border-gray-300 dark:border-gray-700 text-[16px] font-semibold relative">
+        <td
+          className="p-4 border-r whitespace-nowrap border-gray-300 dark:border-gray-700 text-[16px] font-semibold relative"
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
           <span
             className="flex items-center justify-center gap-2"
             onClick={(e) => {
@@ -472,8 +474,18 @@ export const Expenses = () => {
             ₹ {roundToTwoDecimalPlaces(expense?.balance)}
           </div>
         </td>
-        <td className="px-6 whitespace-nowrap py-4">
-          <div className="flex justify-center items-center gap-4">
+        <td
+          className="px-6 whitespace-nowrap py-4"
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
+          <div
+            className="flex justify-center items-center gap-4"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
             <button
               className="text-blue-400 font-bold rounded hover:transform hover:scale-125 transition duration-300 ease-in-out"
               onClick={(e) => {
@@ -692,13 +704,20 @@ export const Expenses = () => {
       addExpenseModal ||
       showCharts ||
       showAiInsightsModel ||
-      showImageModal
+      showImageModal ||
+      showBulkActionModal
     ) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "auto";
     }
-  }, [addExpenseModal, showCharts, showAiInsightsModel, showImageModal]);
+  }, [
+    addExpenseModal,
+    showCharts,
+    showAiInsightsModel,
+    showImageModal,
+    showBulkActionModal,
+  ]);
 
   return (
     <>
@@ -732,7 +751,7 @@ export const Expenses = () => {
               {showFilters && (
                 <>
                   {/* category, mode, party filter */}
-                  <div className="flex justify-between w-full items-center py-4 gap-4 flex-wrap">
+                  <div className="flex justify-between w-full items-center gap-4 flex-wrap">
                     {/* party filter */}
                     <div
                       id="partyFilter"
@@ -1081,7 +1100,7 @@ export const Expenses = () => {
                     </div>
                   </div>
                   {/* date filter */}
-                  <div className="flex justify-between w-full items-center py-4 gap-4 flex-wrap">
+                  <div className="flex justify-between w-full items-center gap-4 flex-wrap">
                     {/* start date */}
                     <div className="flex justify-end items-start flex-col gap-2 flex-1 min-w-48 min-h-20">
                       <label
@@ -1144,7 +1163,7 @@ export const Expenses = () => {
                 </>
               )}
               {/* search and action */}
-              <div className="flex justify-between w-full items-center py-4 flex-wrap gap-4">
+              <div className="flex justify-between w-full items-center flex-wrap gap-4">
                 {/* search */}
                 <div className="flex justify-start items-center flex-1">
                   <div className="relative w-full max-w-3xl min-w-60">
@@ -1185,7 +1204,7 @@ export const Expenses = () => {
                 </div>
               </div>
               {/* balances */}
-              <div className="flex justify-center w-full items-center py-4 gap-4 flex-wrap">
+              <div className="flex justify-center w-full items-center gap-4 flex-wrap">
                 <div className="flex justify-start items-start gap-4 flex-1 min-w-60 p-4 bg-gray-200 dark:bg-slate-800 rounded-lg font-bold">
                   <div className="p-1 bg-green-500 rounded-full">
                     <FaPlus color="white" />
@@ -1223,7 +1242,7 @@ export const Expenses = () => {
               {/* ai insights, charts and reset filter btn */}
               <div className="flex justify-end items-center w-full gap-4 flex-wrap">
                 <button
-                  className="hover:brightness-110 hover:animate-pulse font-bold py-2 px-4 w-28 rounded bg-gradient-to-r from-blue-500 to-pink-500 text-white whitespace-nowrap"
+                  className="hover:brightness-110 hover:animate-pulse font-bold py-2 px-4 w-24 rounded bg-gradient-to-r from-blue-500 to-pink-500 text-white whitespace-nowrap text-sm"
                   onClick={() => {
                     if (filteredExpenses.length === 0) {
                       toast.error("No Data to show Ai Insight");
@@ -1242,35 +1261,108 @@ export const Expenses = () => {
                   onClick={() => {
                     setShowCharts(true);
                   }}
-                  className={`bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded flex justify-center whitespace-nowrap items-center gap-2 w-28 ${
+                  className={`bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded flex justify-center whitespace-nowrap items-center gap-2 w-24 text-sm ${
                     filteredExpenses.length === 0 &&
                     "opacity-50 cursor-not-allowed"
                   }`}
                   disabled={filteredExpenses.length === 0}
                 >
-                  <FaChartColumn />
                   Reports
                 </button>
                 <button
                   onClick={resetHandler}
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex justify-center whitespace-nowrap items-center gap-2 w-28"
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex justify-center whitespace-nowrap items-center gap-2 w-24 text-sm"
                 >
                   Reset Filters
                 </button>
               </div>
 
-              {/* data table */}
-              <div className="flex justify-center w-full items-center py-4 gap-4 flex-wrap ">
-                <div className="flex justify-start w-full items-center gap-4 flex-wrap">
-                  <h1>
-                    Showing{" "}
-                    <span className="text-blue-500">
-                      {filteredExpenses.length}
-                    </span>{" "}
-                    Expenses of{" "}
-                    <span className="text-blue-500">{expenses.length}</span>{" "}
-                  </h1>
+              {/* table info and actions */}
+              <div className="flex justify-between w-full items-end gap-4 flex-wrap">
+                <div className="flex justify-start items-start gap-2 flex-wrap flex-col">
+                  {/* pagination */}
+                  <div className="flex justify-center gap-2 items-center text-sm">
+                    {!isLoading &&
+                      filteredExpenses?.length / rowsPerPage > 1 && (
+                        <>
+                          <button
+                            onClick={() => {
+                              currentPage > 1 &&
+                                setCurrentPage(currentPage - 1);
+                            }}
+                            className={`bg-blue-500 hover:bg-blue-700 text-white font-bold p-1 rounded-full ${
+                              currentPage <= 1 &&
+                              "opacity-50 cursor-not-allowed "
+                            }`}
+                            disabled={currentPage <= 1}
+                          >
+                            <FaAngleLeft size={15} />
+                          </button>
+                          <span className="dark:text-white">
+                            Page {currentPage} of{" "}
+                            {Math.ceil(filteredExpenses?.length / rowsPerPage)}
+                          </span>
+                          <button
+                            onClick={() => {
+                              currentPage <
+                                Math.ceil(
+                                  filteredExpenses?.length / rowsPerPage
+                                ) && setCurrentPage(currentPage + 1);
+                            }}
+                            className={`bg-blue-500 hover:bg-blue-700 text-white font-bold p-1 rounded-full ${
+                              currentPage >=
+                                Math.ceil(
+                                  filteredExpenses?.length / rowsPerPage
+                                ) && "opacity-50 cursor-not-allowed"
+                            }`}
+                            disabled={
+                              currentPage >=
+                              Math.ceil(filteredExpenses?.length / rowsPerPage)
+                            }
+                          >
+                            <FaAngleRight size={15} />
+                          </button>
+                        </>
+                      )}
+                  </div>
+                  {/* count */}
+                  <div className="flex justify-center items-center gap-4 flex-wrap text-sm">
+                    <h1>
+                      Showing{" "}
+                      <span className="text-blue-500">
+                        {filteredExpenses?.slice(start, end).length}
+                      </span>{" "}
+                      Expenses of{" "}
+                      <span className="text-blue-500">
+                        {filteredExpenses.length}
+                      </span>{" "}
+                    </h1>
+                  </div>
                 </div>
+
+                {/* selected count */}
+                <div className="flex justify-center items-center gap-4 flex-wrap">
+                  {selectedBulkExpenses.length > 0 && (
+                    <h1>
+                      <span className="text-blue-500">
+                        {selectedBulkExpenses.length}
+                      </span>{" "}
+                      Expenses selected{" "}
+                      <span
+                        className="text-blue-500 font-bold cursor-pointer"
+                        onClick={() => {
+                          setShowBulkActionModal(true);
+                        }}
+                      >
+                        Bulk Action
+                      </span>{" "}
+                    </h1>
+                  )}
+                </div>
+              </div>
+
+              {/* data table */}
+              <div className="flex justify-center w-full items-center gap-2 flex-wrap flex-col">
                 <div className="relative overflow-x-auto shadow-md w-full rounded-t-lg">
                   <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -1286,7 +1378,7 @@ export const Expenses = () => {
                               id="default-checkbox"
                               type="checkbox"
                               value=""
-                              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded"
                               checked={
                                 selectedBulkExpenses.length ===
                                 filteredExpenses?.slice(start, end).length
@@ -1352,49 +1444,6 @@ export const Expenses = () => {
                 </div>
               </div>
 
-              {/* pagination */}
-              <div className="mt-4 flex justify-center gap-4 items-center">
-                {!isLoading && filteredExpenses?.length / rowsPerPage > 1 && (
-                  <>
-                    <button
-                      onClick={() => {
-                        scrollToBottom();
-                        currentPage > 1 && setCurrentPage(currentPage - 1);
-                      }}
-                      className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full ${
-                        currentPage <= 1 && "opacity-50 cursor-not-allowed "
-                      }`}
-                      disabled={currentPage <= 1}
-                    >
-                      <FaAngleLeft size={25} />
-                    </button>
-                    <span className="dark:text-white">
-                      Page {currentPage} of{" "}
-                      {Math.ceil(filteredExpenses?.length / rowsPerPage)}
-                    </span>
-                    <button
-                      onClick={() => {
-                        scrollToBottom();
-                        currentPage <
-                          Math.ceil(filteredExpenses?.length / rowsPerPage) &&
-                          setCurrentPage(currentPage + 1);
-                      }}
-                      className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full ${
-                        currentPage >=
-                          Math.ceil(filteredExpenses?.length / rowsPerPage) &&
-                        "opacity-50 cursor-not-allowed"
-                      }`}
-                      disabled={
-                        currentPage >=
-                        Math.ceil(filteredExpenses?.length / rowsPerPage)
-                      }
-                    >
-                      <FaAngleRight size={25} />
-                    </button>
-                  </>
-                )}
-              </div>
-
               {/* add expense modal */}
               {addExpenseModal && (
                 <>
@@ -1410,7 +1459,7 @@ export const Expenses = () => {
                       !modesIsError &&
                       !categoriesIsError &&
                       !partiesIsError && (
-                        <div className="w-full max-w-2xl ">
+                        <div className="w-full max-w-2xl">
                           {/* <!-- Modal content --> */}
                           <form className="relative bg-white sm:rounded-lg shadow dark:bg-gray-700">
                             {/* <!-- Modal header --> */}
@@ -1716,10 +1765,18 @@ export const Expenses = () => {
                 />
               )}
 
+              {/* image modal */}
               <ImageModel
                 showImageModel={showImageModal}
                 closeImageModel={handleCloseImageModal}
                 images={showImageModalUrls}
+              />
+
+              {/* bulk action modal */}
+              <BulkActionModel
+                showBulkActionModal={showBulkActionModal}
+                closeBulkActionModal={closeBulkActionModal}
+                selectedExpenses={selectedBulkExpenses}
               />
             </>
           )}

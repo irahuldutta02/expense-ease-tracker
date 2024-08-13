@@ -29,6 +29,13 @@ export const expenseApiSlice = apiSlice.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    bulkUpdateExpense: builder.mutation({
+      query: (data) => ({
+        url: BACKEND_URL + `${EXPENSE_URL}/bulk-update`,
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -37,4 +44,5 @@ export const {
   useCreateExpenseMutation,
   useUpdateExpenseMutation,
   useDeleteExpenseMutation,
+  useBulkUpdateExpenseMutation,
 } = expenseApiSlice;
