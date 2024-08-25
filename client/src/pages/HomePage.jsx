@@ -1,10 +1,4 @@
-import {
-  ArrowRight,
-  BarChart3,
-  Brain,
-  CreditCard,
-  PieChart,
-} from "lucide-react";
+import { ArrowRight, BarChart3, Brain, CreditCard } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export function HomePage() {
@@ -79,8 +73,8 @@ export function HomePage() {
                   recommendations for improving your financial health.
                 </p>
               </div>
-              <div className="flex justify-center md:justify-end">
-                <PieChart className="h-64 w-64 text-primary" />
+              <div className="flex justify-center lg:justify-end">
+                <img src="/gemini.png" alt="gemini" className="rounded-lg" />
               </div>
             </div>
           </div>
@@ -108,18 +102,28 @@ export function HomePage() {
           </div>
         </section>
       </main>
-      <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
-        <p className="text-xs text-gray-500 dark:text-gray-400">
-          © 2023 ExpenseEase. All rights reserved.
-        </p>
-        <nav className="sm:ml-auto flex gap-4 sm:gap-6">
-          <Link className="text-xs hover:underline underline-offset-4" to="#">
-            Terms of Service
-          </Link>
-          <Link className="text-xs hover:underline underline-offset-4" to="#">
-            Privacy
-          </Link>
-        </nav>
+      <footer className="flex justify-center items-center border-t">
+        <div className="flex flex-col gap-2 sm:flex-row py-6 shrink-0 items-center px-4 md:px-6 w-full max-w-6xl">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            © 2023 ExpenseEase. All rights reserved.
+          </p>
+          <nav className="sm:ml-auto flex gap-4 sm:gap-6">
+            <Link
+              target="_blank"
+              className="text-xs hover:underline underline-offset-4"
+              to="https://github.com/irahuldutta02"
+            >
+              GitHub
+            </Link>
+            <Link
+              target="_blank"
+              className="text-xs hover:underline underline-offset-4"
+              to="https://www.linkedin.com/in/irahuldutta02"
+            >
+              LinkedIn
+            </Link>
+          </nav>
+        </div>
       </footer>
     </div>
   );
