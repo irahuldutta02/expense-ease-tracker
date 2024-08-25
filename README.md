@@ -2,7 +2,7 @@
 
 ## Deployment
 
-### [Deployed at Vercel 🔗](https://expense-ease-tracker.vercel.app/)
+### [Deployed at Vercel 🔗](https://expense-ease-tracker.vercel.app)
 
 ## Description
 
@@ -12,6 +12,10 @@
 - You can view your expenses in a tabular format.
 - You can view your expenses categorically, party wise or mode wise in a graphical format.
 - You can get ai generated insights on your spending.
+- You can filter you expenses based on date, category, party, mode with custom made filters components.
+- You can export your expenses in a csv format.
+- You can make changes to your expenses in bulk.
+- Auto logout feature is there after 24 hours.
 
 ## Local Setup
 
@@ -22,7 +26,7 @@ git clone https://github.com/irahuldutta02/expense-ease-tracker
 cd expense-ease-tracker
 ```
 
-### 2. Create a .env file in the server folder, client folder and set up the environment variables accordingly the .env copy files are provided in the respective folders
+### 2. Create a .env file in the server folder, client folder and set up the environment variables accordingly the sample.env files are provided in the respective folders.
 
 ### 3. Install dependencies and run the server
 
@@ -44,6 +48,7 @@ npm run dev
 
 - **React**
 - **Redux Toolkit**
+- **RTK Query**
 - **TailwindCSS**
 - **Chart.js**
 - **React Router Dom**
