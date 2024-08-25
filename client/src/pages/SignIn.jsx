@@ -81,7 +81,7 @@ export const SignIn = () => {
 
   return (
     <>
-      <section className="bg-white dark:bg-gray-900">
+      <section className="bg-white dark:bg-gray-900 w-full">
         <div className="container flex items-center justify-center px-6 mx-auto">
           <form className="w-full max-w-md">
             <div className="flex items-center justify-center mt-6">

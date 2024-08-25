@@ -20,10 +20,12 @@ export const MainRoutes = () => {
   const authenticatedRoutes = [
     {
       path: "/",
+      element: <RootLayout />,
       children: [
-        { path: "", element: <Navigate to="/dashboard" replace /> },
+        { path: "", element: <HomePage /> },
         { path: "/sign-in", element: <Navigate to="/dashboard" replace /> },
         { path: "/sign-up", element: <Navigate to="/dashboard" replace /> },
+        { path: "*", element: <NotFound /> },
       ],
     },
     {
@@ -39,10 +41,6 @@ export const MainRoutes = () => {
         { path: "profile", element: <Profile /> },
       ],
     },
-    {
-      path: "*",
-      element: <NotFound />,
-    },
   ];
 
   const unauthenticatedRoutes = [
@@ -54,28 +52,14 @@ export const MainRoutes = () => {
         { path: "sign-in", element: <SignIn /> },
         { path: "sign-up", element: <SignUp /> },
         { path: "reset-password/:resetToken", element: <ResetPass /> },
-        {
-          path: "dashboard/expenses",
-          element: <Navigate to="/sign-in" replace />,
-        },
-        {
-          path: "dashboard/parties",
-          element: <Navigate to="/sign-in" replace />,
-        },
-        {
-          path: "dashboard/categories",
-          element: <Navigate to="/sign-in" replace />,
-        },
-        {
-          path: "dashboard/modes",
-          element: <Navigate to="/sign-in" replace />,
-        },
-        {
-          path: "dashboard/profile",
-          element: <Navigate to="/sign-in" replace />,
-        },
-
         { path: "*", element: <NotFound /> },
+      ],
+    },
+    {
+      path: "dashboard",
+      children: [
+        { path: "", element: <Navigate to="/sign-in" replace /> },
+        { path: "*", element: <Navigate to="/sign-in" replace /> },
       ],
     },
   ];

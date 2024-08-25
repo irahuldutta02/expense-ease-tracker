@@ -7,7 +7,7 @@ export const RootLayout = () => {
     <>
       <ScrollToTop>
         <div className="bg-white dark:bg-gray-900 min-h-screen">
-          <div className="max-w-6xl m-auto">
+          <div className="flex flex-col justify-start items-center w-full">
             <MainNav />
             <Outlet />
           </div>

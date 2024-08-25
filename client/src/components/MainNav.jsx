@@ -8,8 +8,8 @@ export const MainNav = () => {
 
   return (
     <>
-      <nav>
-        <div className="container flex items-center justify-between p-4 py-8 mx-auto max-w-6xl">
+      <nav className="w-full bg-gray-100 dark:bg-gray-800 ">
+        <div className="container flex items-center justify-between p-4 mx-auto w-full max-w-6xl">
           <Link
             to={"/"}
             className="flex justify-center items-center gap-4 dark:text-white"
