@@ -1,8 +1,20 @@
 # expense-ease-tracker
 
-## Deployment
+## Preview
+![preview](https://github.com/user-attachments/assets/8533c39e-01f1-42db-b2d3-a9a2e664dc3f)
 
+## Deployment
 ### [Deployed at Vercel 🔗](https://expense-ease-tracker.vercel.app)
+
+## Dummy Account
+- Email
+  ```
+  rdtech2002@gmail.com
+  ```
+- Password
+  ```
+  123456
+  ```
 
 ## Description
 
