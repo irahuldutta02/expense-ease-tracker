@@ -27,9 +27,7 @@ export const AiInsightsModel = ({ startDate, endDate, onCloseModel }) => {
 
   return (
     <>
-      <div
-        className="fixed inset-0 bg-black bg-opacity-70 z-50"
-      ></div>
+      <div className="fixed inset-0 bg-black bg-opacity-70 z-50"></div>
       <div
         id="close-model"
         className="fixed inset-0 flex justify-center items-start sm:m-4 sm:rounded-lg overflow-auto z-50"
@@ -74,7 +72,7 @@ export const AiInsightsModel = ({ startDate, endDate, onCloseModel }) => {
                 <>
                   <div className="flex justify-start items-center flex-col gap-8 w-full p-4">
                     <h1 className="text-3xl font-bold dark:text-white">
-                      Page Not Found
+                      Something went wrong!
                     </h1>
                     <div className="flex justify-center items-center gap-4">
                       <button
