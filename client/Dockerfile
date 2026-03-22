@@ -2,18 +2,22 @@ FROM node:20-slim as build
 
 WORKDIR /app
 
-# Install build dependencies (for sharp / native modules)
-RUN apt-get update && apt-get install -y python3 make g++ \
+# Install dependencies for sharp (IMPORTANT FIX)
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    libvips-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Install dependencies first (better caching)
+# Install deps first
 COPY package*.json ./
 RUN npm install
 
-# Copy rest of code
+# Copy code
 COPY . .
 
-# Build app
+# Build
 RUN npm run build
 
 # Production image
