@@ -1,4 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
+import { VITE_NODE_ENV } from "../constants";
 import { apiSlice } from "./apiSlice";
 import userReducer from "./userSlice";
 
@@ -9,7 +10,7 @@ const store = configureStore({
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(apiSlice.middleware),
-  devTools: import.meta.env.VITE_NODE_ENV === "development",
+  devTools: VITE_NODE_ENV === "development",
 });
 
 export default store;
