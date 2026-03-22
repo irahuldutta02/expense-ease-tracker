@@ -1,7 +1,7 @@
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const express = require("express");
-const { PORT, CLIENT_URL } = require("./config/server.config.js");
+const { PORT } = require("./config/server.config.js");
 const connectDB = require("./db/db.js");
 const { errorHandler, notFound } = require("./middleware/error.middleware.js");
 
@@ -20,15 +20,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.text());
 
-app.use(
-  cors({
-    origin: CLIENT_URL,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-    credentials: true,
-  }),
-);
-
-app.options("*", cors());
+app.use(cors());
 
 app.get("/", (req, res) => {
   return res.status(200).json({
