@@ -1,18 +1,21 @@
 import { Outlet } from "react-router-dom";
 import { ScrollToTop } from "../components/ScrollToTop";
 import { DashboardNav } from "../components/DashboardNav";
+import { PageTransition } from "../components/PageTransition";
 
 export const DashboardLayout = () => {
   return (
-    <>
-      <ScrollToTop>
+    <ScrollToTop>
+      <div className="bg-background text-foreground min-h-screen transition-colors duration-300">
         <DashboardNav />
-        <div className="p-4 sm:ml-64 dark:bg-gray-900 dark:text-white min-h-screen">
-          <div className="mt-14 mb-14 max-w-6xl m-auto">
-            <Outlet />
+        <main className="p-4 sm:ml-64 dark:bg-background min-h-screen pt-20">
+          <div className="max-w-6xl m-auto">
+            <PageTransition>
+              <Outlet />
+            </PageTransition>
           </div>
-        </div>
-      </ScrollToTop>
-    </>
+        </main>
+      </div>
+    </ScrollToTop>
   );
 };

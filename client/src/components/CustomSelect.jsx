@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from "react";
+import { ChevronDown, Search, Check } from "lucide-react";
+import { cn } from "../utils/cn";
 
 const CustomSelect = ({
   options,
@@ -11,26 +13,21 @@ const CustomSelect = ({
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef(null);
 
-  const searchTerm =
-    options.filter((option) => option._id === selected)[0]?.Name || "";
+  const selectedOption = options.find((option) => option._id === selected);
+  const displayValue = selectedOption ? selectedOption.Name : searching;
 
   useEffect(() => {
-    // Function to handle click outside
     const handleClickOutside = (event) => {
       if (ref.current && !ref.current.contains(event.target)) {
         setIsOpen(false);
         setSearching("");
       }
     };
-
-    // Adding event listener when dropdown is open
     if (isOpen) {
-      document.addEventListener("click", handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
-
-    // Cleanup function to remove event listener
     return () => {
-      document.removeEventListener("click", handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen, setSearching]);
 
@@ -41,43 +38,63 @@ const CustomSelect = ({
   const handleSelect = (optionId) => {
     setSelected(optionId);
     setIsOpen(false);
+    setSearching("");
   };
 
   const handleSearching = (search) => {
     setSelected("");
     setSearching(search);
+    setIsOpen(true);
   };
 
   return (
-    <div className="col-span-6 sm:col-span-3 relative" ref={ref}>
-      <label
-        htmlFor="custom-select"
-        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-      >
-        Select {labelFor}
+    <div className="space-y-2 relative" ref={ref}>
+      <label className="text-sm font-bold ml-1 text-foreground/80">
+        {labelFor}
       </label>
-      <div className="relative">
+      <div className="relative group">
+        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted-foreground group-focus-within:text-primary transition-colors">
+          <Search size={16} />
+        </div>
         <input
-          id="custom-select"
-          name="custom-select"
           type="text"
-          placeholder={`Select ${labelFor}`}
-          className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 outline-none"
-          value={searchTerm.length === 0 ? searching : searchTerm}
+          placeholder={`Search ${labelFor}...`}
+          className={cn(
+            "w-full pl-10 pr-10 py-2.5 bg-muted/50 border rounded-2xl text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all",
+            isOpen && "border-primary/50 ring-2 ring-primary/10"
+          )}
+          value={displayValue}
           onChange={(e) => handleSearching(e.target.value)}
           onFocus={() => setIsOpen(true)}
         />
+        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-muted-foreground">
+          <ChevronDown size={16} className={cn("transition-transform duration-200", isOpen && "rotate-180")} />
+        </div>
+
         {isOpen && (
-          <div className="absolute z-20 mt-1 w-full max-h-48 overflow-y-auto bg-white dark:bg-gray-700 rounded-lg shadow-lg border border-gray-300 dark:border-gray-500 dropdown-custom-scrollbar">
-            {filteredOptions.map((option) => (
-              <div
-                key={option._id}
-                className="cursor-pointer p-2 hover:bg-gray-100 dark:hover:bg-gray-600"
-                onClick={() => handleSelect(option._id)}
-              >
-                {option.Name}
+          <div className="absolute z-[70] mt-2 w-full max-h-60 overflow-y-auto bg-card border shadow-2xl rounded-2xl p-1 animate-in fade-in zoom-in-95 slide-in-from-top-2 custom-scrollbar">
+            {filteredOptions.length === 0 ? (
+              <div className="p-4 text-center text-sm text-muted-foreground italic">
+                No {labelFor.toLowerCase()} found
               </div>
-            ))}
+            ) : (
+              filteredOptions.map((option) => (
+                <button
+                  key={option._id}
+                  type="button"
+                  className={cn(
+                    "w-full flex items-center justify-between px-3 py-2 text-sm rounded-xl transition-colors",
+                    selected === option._id 
+                      ? "bg-primary text-primary-foreground font-bold" 
+                      : "hover:bg-muted text-left"
+                  )}
+                  onClick={() => handleSelect(option._id)}
+                >
+                  <span className="truncate">{option.Name}</span>
+                  {selected === option._id && <Check size={16} className="shrink-0" />}
+                </button>
+              ))
+            )}
           </div>
         )}
       </div>

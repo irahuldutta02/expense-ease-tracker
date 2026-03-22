@@ -1,18 +1,19 @@
 import { Outlet } from "react-router-dom";
 import { ScrollToTop } from "../components/ScrollToTop";
 import { MainNav } from "../components/MainNav";
+import { PageTransition } from "../components/PageTransition";
 
 export const RootLayout = () => {
   return (
-    <>
-      <ScrollToTop>
-        <div className="bg-white dark:bg-gray-900 min-h-screen">
-          <div className="flex flex-col justify-start items-center w-full">
-            <MainNav />
+    <ScrollToTop>
+      <div className="bg-background text-foreground min-h-screen transition-colors duration-300">
+        <MainNav />
+        <main className="flex flex-col items-center w-full pt-16">
+          <PageTransition>
             <Outlet />
-          </div>
-        </div>
-      </ScrollToTop>
-    </>
+          </PageTransition>
+        </main>
+      </div>
+    </ScrollToTop>
   );
 };

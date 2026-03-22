@@ -1,234 +1,165 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import { FiUser } from "react-icons/fi";
-import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { useRegisterMutation } from "../redux/userApiSlice";
-import { setCredentials } from "../redux/userSlice";
+import { motion } from "framer-motion";
+import { User, Mail, Lock, UserPlus, ArrowRight, Loader2 } from "lucide-react";
 
 export const SignUp = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const [register, { isLoading: isRegistering }] = useRegisterMutation();
-
-  const validate = () => {
-    if (
-      name.trim() === "" ||
-      email.trim() === "" ||
-      password.trim() === "" ||
-      confirmPassword.trim() === ""
-    ) {
-      toast.error("Invalid email or password");
-      return false;
-    }
-
-    if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
-      return false;
-    }
-
-    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-    if (!email.match(emailRegex)) {
-      toast.error("Invalid email address");
-      return false;
-    }
-
-    return true;
-  };
+  const navigate = useNavigate();
+  const [register, { isLoading }] = useRegisterMutation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!validate()) {
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
       return;
     }
-
     try {
-      const res = await register({ email, password, name }).unwrap();
-      dispatch(setCredentials({ ...res.data }));
-      toast.success("Registration Successful");
-      navigate("/dashboard");
-    } catch (error) {
-      toast.error(
-        error?.data?.message ||
-          error?.message ||
-          error?.error ||
-          "An error occurred"
-      );
+      await register({ name, email, password }).unwrap();
+      toast.success("Account created! Please sign in.");
+      navigate("/sign-in");
+    } catch (err) {
+      toast.error(err?.data?.message || err.error || "Registration failed");
     }
   };
 
   return (
-    <>
-      <section className="bg-white dark:bg-gray-900 w-full">
-        <div className="container flex items-center justify-center px-6 mx-auto">
-          <form className="w-full max-w-md">
-            <div className="flex items-center justify-center mt-6">
-              <Link
-                to={"/sign-in"}
-                className="w-1/3 pb-4 font-medium text-center text-gray-500 capitalize dark:text-gray-300 border-b-2 dark:border-gray-400"
-              >
-                sign in
-              </Link>
+    <div className="min-h-[calc(100vh-64px)] w-full flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Background Orbs */}
+      <div className="absolute top-0 right-1/2 translate-x-1/2 w-[1000px] h-[600px] bg-primary/5 rounded-full blur-[120px] -z-10" />
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-500/5 rounded-full blur-[100px] -z-10" />
 
-              <Link
-                to={"/sign-up"}
-                className="w-1/3 pb-4 font-medium text-center text-gray-800 capitalize  dark:text-white border-b-2 border-blue-500 dark:border-blue-400"
-              >
-                sign up
-              </Link>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-md"
+      >
+        <div className="bg-card border shadow-2xl rounded-[2.5rem] overflow-hidden">
+          <div className="p-8 md:p-10">
+            <div className="text-center space-y-2 mb-8">
+              <h1 className="text-3xl font-black tracking-tight">Create Account</h1>
+              <p className="text-muted-foreground text-sm font-medium">
+                Join ExpenseEase and start tracking
+              </p>
             </div>
 
-            <div className="relative flex items-center mt-6">
-              <span className="absolute">
-                <FiUser className="text-gray-300 dark:text-gray-500 w-6 h-6 mx-3" />
-              </span>
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="space-y-4">
+                <div className="space-y-2 group">
+                  <label className="text-sm font-bold ml-1 text-foreground/80 group-focus-within:text-primary transition-colors">
+                    Full Name
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground h-5 w-5" />
+                    <input
+                      type="text"
+                      required
+                      className="w-full pl-12 pr-4 py-3 bg-muted/50 border rounded-2xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                      placeholder="John Doe"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                    />
+                  </div>
+                </div>
 
-              <input
-                type="text"
-                className="block w-full py-3 text-gray-700 bg-white border rounded-lg px-11 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
-                placeholder="Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
+                <div className="space-y-2 group">
+                  <label className="text-sm font-bold ml-1 text-foreground/80 group-focus-within:text-primary transition-colors">
+                    Email Address
+                  </label>
+                  <div className="relative">
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground h-5 w-5" />
+                    <input
+                      type="email"
+                      required
+                      className="w-full pl-12 pr-4 py-3 bg-muted/50 border rounded-2xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                      placeholder="name@example.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </div>
+                </div>
 
-            <div className="relative flex items-center mt-4">
-              <span className="absolute">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-6 h-6 mx-3 text-gray-300 dark:text-gray-500"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                  />
-                </svg>
-              </span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2 group">
+                    <label className="text-sm font-bold ml-1 text-foreground/80 group-focus-within:text-primary transition-colors">
+                      Password
+                    </label>
+                    <div className="relative">
+                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground h-5 w-5" />
+                      <input
+                        type="password"
+                        required
+                        className="w-full pl-12 pr-4 py-3 bg-muted/50 border rounded-2xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                        placeholder="••••••••"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                      />
+                    </div>
+                  </div>
 
-              <input
-                type="email"
-                className="block w-full py-3 text-gray-700 bg-white border rounded-lg px-11 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
-                placeholder="Email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-
-            <div className="relative flex items-center mt-4">
-              <span className="absolute">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-6 h-6 mx-3 text-gray-300 dark:text-gray-500"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                  />
-                </svg>
-              </span>
-
-              <input
-                type={showPassword ? "text" : "password"}
-                className="block w-full px-10 py-3 text-gray-700 bg-white border rounded-lg dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-
-              <span
-                className="absolute right-0 cursor-pointer"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {!showPassword ? (
-                  <FaRegEyeSlash className="text-gray-300 dark:text-gray-500 w-6 h-6 mx-3" />
-                ) : (
-                  <FaRegEye className="text-gray-300 dark:text-gray-500 w-6 h-6 mx-3" />
-                )}
-              </span>
-            </div>
-
-            <div className="relative flex items-center mt-4">
-              <span className="absolute">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-6 h-6 mx-3 text-gray-300 dark:text-gray-500"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                  />
-                </svg>
-              </span>
-
-              <input
-                type={showConfirmPassword ? "text" : "password"}
-                className="block w-full px-10 py-3 text-gray-700 bg-white border rounded-lg dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
-                placeholder="Confirm Password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-
-              <span
-                className="absolute right-0 cursor-pointer"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              >
-                {!showConfirmPassword ? (
-                  <FaRegEyeSlash className="text-gray-300 dark:text-gray-500 w-6 h-6 mx-3" />
-                ) : (
-                  <FaRegEye className="text-gray-300 dark:text-gray-500 w-6 h-6 mx-3" />
-                )}
-              </span>
-            </div>
-
-            <div className="mt-6">
-              <button
-                className={`w-full px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-lg hover:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50 ${
-                  isRegistering && "opacity-70 cursor-not-allowed"
-                }`}
-                onClick={handleSubmit}
-                disabled={isRegistering}
-              >
-                Sign Up
-              </button>
-
-              <div className="mt-6 text-center ">
-                <Link
-                  to={"/sign-in"}
-                  className="text-sm text-blue-500 hover:underline dark:text-blue-400"
-                >
-                  Already have an account?
-                </Link>
+                  <div className="space-y-2 group">
+                    <label className="text-sm font-bold ml-1 text-foreground/80 group-focus-within:text-primary transition-colors">
+                      Confirm
+                    </label>
+                    <div className="relative">
+                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground h-5 w-5" />
+                      <input
+                        type="password"
+                        required
+                        className="w-full pl-12 pr-4 py-3 bg-muted/50 border rounded-2xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                        placeholder="••••••••"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full flex items-center justify-center gap-2 py-4 bg-primary text-primary-foreground font-bold rounded-2xl shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:scale-100"
+              >
+                {isLoading ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <>
+                    Sign Up <ArrowRight className="h-5 w-5" />
+                  </>
+                )}
+              </button>
+            </form>
+
+            <div className="mt-8 text-center">
+              <p className="text-sm text-muted-foreground font-medium">
+                Already have an account?{" "}
+                <Link
+                  to="/sign-in"
+                  className="text-primary font-bold hover:underline transition-all underline-offset-4"
+                >
+                  Sign In
+                </Link>
+              </p>
             </div>
-          </form>
+          </div>
+
+          <div className="p-4 bg-muted/30 border-t text-center">
+            <Link 
+              to="/" 
+              className="text-xs font-bold text-muted-foreground hover:text-foreground transition-colors"
+            >
+              ← Back to Home
+            </Link>
+          </div>
         </div>
-      </section>
-    </>
+      </motion.div>
+    </div>
   );
 };

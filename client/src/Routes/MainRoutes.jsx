@@ -3,7 +3,6 @@ import { RootLayout } from "../layouts/RootLayout";
 import { HomePage } from "../pages/HomePage";
 import { NotFound } from "../pages/NotFound";
 import { DashboardLayout } from "../layouts/DashboardLayout";
-import { Charts } from "../pages/Charts";
 import { SignIn } from "../pages/SignIn";
 import { SignUp } from "../pages/SignUp";
 import { useSelector } from "react-redux";
@@ -22,9 +21,9 @@ export const MainRoutes = () => {
       path: "/",
       element: <RootLayout />,
       children: [
-        { path: "", element: <HomePage /> },
-        { path: "/sign-in", element: <Navigate to="/dashboard" replace /> },
-        { path: "/sign-up", element: <Navigate to="/dashboard" replace /> },
+        { index: true, element: <HomePage /> },
+        { path: "sign-in", element: <Navigate to="/dashboard" replace /> },
+        { path: "sign-up", element: <Navigate to="/dashboard" replace /> },
         { path: "*", element: <NotFound /> },
       ],
     },
@@ -32,13 +31,13 @@ export const MainRoutes = () => {
       path: "/dashboard",
       element: <DashboardLayout />,
       children: [
-        { path: "", element: <Navigate to="/dashboard/expenses" replace /> },
-        { path: "charts", element: <Charts /> },
+        { index: true, element: <Navigate to="expenses" replace /> },
         { path: "expenses", element: <Expenses /> },
         { path: "parties", element: <Parties /> },
         { path: "modes", element: <Modes /> },
         { path: "categories", element: <Categories /> },
         { path: "profile", element: <Profile /> },
+        { path: "*", element: <NotFound /> },
       ],
     },
   ];
@@ -48,7 +47,7 @@ export const MainRoutes = () => {
       path: "/",
       element: <RootLayout />,
       children: [
-        { path: "", element: <HomePage /> },
+        { index: true, element: <HomePage /> },
         { path: "sign-in", element: <SignIn /> },
         { path: "sign-up", element: <SignUp /> },
         { path: "reset-password/:resetToken", element: <ResetPass /> },
@@ -56,15 +55,10 @@ export const MainRoutes = () => {
       ],
     },
     {
-      path: "dashboard",
-      children: [
-        { path: "", element: <Navigate to="/sign-in" replace /> },
-        { path: "*", element: <Navigate to="/sign-in" replace /> },
-      ],
+      path: "/dashboard",
+      element: <Navigate to="/sign-in" replace />,
     },
   ];
 
-  const allRoutes = userInfo ? authenticatedRoutes : unauthenticatedRoutes;
-
-  return useRoutes(allRoutes);
+  return useRoutes(userInfo ? authenticatedRoutes : unauthenticatedRoutes);
 };

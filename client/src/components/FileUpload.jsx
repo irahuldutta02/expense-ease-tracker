@@ -1,159 +1,114 @@
 import axios from "axios";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { Upload, Loader2 } from "lucide-react";
+import { cn } from "../utils/cn";
+import { useSelector } from "react-redux";
 import { BACKEND_URL } from "../constants";
-import { setFileUploadHeader } from "../utils/setHeader";
 
-export const FileUpload = ({ type, page, onSetFileUrl }) => {
-  if (type === "single-image" && page === "profile") {
-    return <SingleImageModalForm onSetFileUrl={onSetFileUrl} />;
-  }
-
-  if (type === "multiple-image" && page === "expense") {
-    return <MultipleImageModalForm onSetFileUrl={onSetFileUrl} />;
-  }
-};
-
-const SingleImageModalForm = ({ onSetFileUrl }) => {
+export const FileUpload = ({ onSetFileUrl, type, page }) => {
   const [loading, setLoading] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
+  const { userInfo } = useSelector((state) => state.user);
 
-  const fileUpload = async (e) => {
+  const uploadFile = async (file) => {
     setLoading(true);
-    const file = e.target.files[0];
-    if (!file) {
-      toast.error("No file selected!");
-      return;
-    }
-
-    if (!file.type.startsWith("image/")) {
-      toast.error("Please upload an image file!");
-      setLoading(false);
-      return;
-    }
-
     const formData = new FormData();
     formData.append("my_file", file);
 
-    toast
-      .promise(
-        axios.post(BACKEND_URL + "/api/cloudinary/upload", formData, {
-          headers: setFileUploadHeader(),
-        }),
+    try {
+      const res = await axios.post(
+        `${BACKEND_URL}/api/cloudinary/upload`,
+        formData,
         {
-          loading: "Uploading...",
-          success: (res) => {
-            onSetFileUrl(res?.data?.secure_url);
-            return "File uploaded successfully!";
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${userInfo.token}`,
           },
-          error: "Failed to upload file!",
         }
-      )
-      .catch((error) => {
-        console.error(error);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
-
-  const resetForm = () => {
-    document.getElementById("file_input").value = "";
-  };
-
-  return (
-    <>
-      <input
-        className={`block p-[5px] w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 ${
-          loading ? "cursor-not-allowed" : "cursor-pointer"
-        }`}
-        id="file_input"
-        type="file"
-        accept="image/*"
-        disabled={loading}
-        onClick={() => {
-          !loading && resetForm();
-        }}
-        onChange={fileUpload}
-      />
-    </>
-  );
-};
-
-const MultipleImageModalForm = ({ onSetFileUrl }) => {
-  const [loading, setLoading] = useState(false);
-
-  const fileUpload = async (e) => {
-    setLoading(true);
-
-    const files = e.target.files;
-    if (files.length === 0) {
-      toast.error("No files selected!");
-      setLoading(false);
-      return;
-    }
-
-    const validFiles = Array.from(files).filter((file) => {
-      if (!file.type.startsWith("image/")) {
-        toast.error("Please upload an image file!");
-        return false;
+      );
+      if (res.status === 200) {
+        onSetFileUrl(type === "multiple-image" ? [res.data.secure_url] : res.data.secure_url);
+        toast.success("File uploaded successfully");
       }
-      return true;
-    });
-
-    if (validFiles.length === 0) {
-      toast.error("No valid image files selected!");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Error uploading file");
+    } finally {
       setLoading(false);
-      return;
     }
-
-    const uploadPromises = validFiles.map((file) => {
-      const formData = new FormData();
-      formData.append("my_file", file);
-
-      return axios.post(BACKEND_URL + "/api/cloudinary/upload", formData, {
-        headers: setFileUploadHeader(),
-      });
-    });
-
-    toast
-      .promise(Promise.all(uploadPromises), {
-        loading: "Uploading...",
-        success: (responses) => {
-          const urlArray = responses.map((res) => res?.data?.secure_url);
-          onSetFileUrl(urlArray);
-          return "All files uploaded successfully!";
-        },
-        error: "Failed to upload one or more files!",
-      })
-      .catch((error) => {
-        console.error(error);
-      })
-      .finally(() => {
-        setLoading(false);
-        resetForm();
-      });
   };
 
-  const resetForm = () => {
-    document.getElementById("file_input").value = "";
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      uploadFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleChange = (e) => {
+    e.preventDefault();
+    if (e.target.files && e.target.files[0]) {
+      uploadFile(e.target.files[0]);
+    }
   };
 
   return (
-    <>
-      <input
-        className={`block p-[5px] w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 ${
-          loading ? "cursor-not-allowed" : "cursor-pointer"
-        }`}
-        multiple
-        id="file_input"
-        type="file"
-        accept="image/*"
-        disabled={loading}
-        onClick={() => {
-          !loading && resetForm();
-        }}
-        onChange={fileUpload}
-      />
-    </>
+    <div className="w-full">
+      <label
+        htmlFor="file-upload-input"
+        onDragEnter={handleDrag}
+        onDragLeave={handleDrag}
+        onDragOver={handleDrag}
+        onDrop={handleDrop}
+        className={cn(
+          "relative flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-[2rem] cursor-pointer transition-all duration-300",
+          dragActive 
+            ? "border-primary bg-primary/5 scale-[1.01]" 
+            : "border-muted-foreground/20 bg-muted/30 hover:bg-muted/50 hover:border-primary/50"
+        )}
+      >
+        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+          {loading ? (
+            <div className="flex flex-col items-center gap-2">
+              <Loader2 className="h-8 w-8 text-primary animate-spin" />
+              <p className="text-sm font-medium text-muted-foreground italic">Uploading to cloud...</p>
+            </div>
+          ) : (
+            <>
+              <div className="p-3 rounded-2xl bg-primary/10 text-primary mb-2 transition-transform group-hover:scale-110">
+                <Upload size={24} />
+              </div>
+              <p className="mb-1 text-sm text-foreground font-bold">
+                Click or drag & drop
+              </p>
+              <p className="text-xs text-muted-foreground">
+                PNG, JPG or SVG (MAX. 2MB)
+              </p>
+            </>
+          )}
+        </div>
+        <input
+          id="file-upload-input"
+          name="file-upload-input"
+          type="file"
+          className="hidden"
+          onChange={handleChange}
+          accept="image/*"
+          disabled={loading}
+        />
+      </label>
+    </div>
   );
 };
