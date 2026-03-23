@@ -10,7 +10,6 @@ import {
 import { useDispatch } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import { logout } from "../redux/userSlice";
-import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "../utils/cn";
 
 export const DashboardSidebar = ({ sidebarOpen, onSidebarClose }) => {
@@ -31,54 +30,60 @@ export const DashboardSidebar = ({ sidebarOpen, onSidebarClose }) => {
   ];
 
   return (
-    <AnimatePresence>
-      {sidebarOpen && (
-        <motion.aside
-          initial={{ x: -256 }}
-          animate={{ x: 0 }}
-          exit={{ x: -256 }}
-          transition={{ type: "spring", damping: 20, stiffness: 150 }}
-          className="fixed top-0 left-0 z-40 w-64 h-screen pt-20 border-r bg-background/80 backdrop-blur-md transition-all duration-300"
-          aria-label="Sidebar"
-        >
-          <div className="h-full px-4 pb-4 overflow-y-auto custom-scrollbar">
-            <ul className="space-y-1.5 font-medium">
-              {navItems.map((item) => (
-                <li key={item.to}>
-                  <NavLink
-                    to={item.to}
-                    onClick={onSidebarClose}
-                    className={({ isActive }) =>
-                      cn(
-                        "flex items-center gap-3 p-3 text-sm rounded-lg transition-all duration-200 group",
-                        isActive
-                          ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-[1.02]"
-                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                      )
-                    }
-                  >
-                    <item.icon size={20} className="transition-transform group-hover:scale-110" />
-                    <span>{item.label}</span>
-                  </NavLink>
-                </li>
-              ))}
-              
-              <li className="pt-4 mt-4 border-t border-border/50">
-                <button
-                  onClick={() => {
-                    handleLogOut();
-                    onSidebarClose();
-                  }}
-                  className="flex w-full items-center gap-3 p-3 text-sm text-destructive rounded-lg transition-all duration-200 hover:bg-destructive/10 hover:shadow-sm group"
+    <>
+      <div
+        className={cn(
+          "fixed inset-0 z-30 bg-black/40 transition-opacity duration-200 sm:hidden",
+          sidebarOpen ? "opacity-100" : "pointer-events-none opacity-0"
+        )}
+        onClick={onSidebarClose}
+        aria-hidden="true"
+      />
+
+      <aside
+        className={cn(
+          "fixed top-0 left-0 z-40 h-screen w-64 border-r bg-background pt-20 shadow-xl transition-transform duration-200 ease-out will-change-transform sm:translate-x-0 sm:shadow-none",
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        )}
+        aria-label="Sidebar"
+      >
+        <div className="h-full overflow-y-auto px-4 pb-4">
+          <ul className="space-y-1.5 font-medium">
+            {navItems.map((item) => (
+              <li key={item.to}>
+                <NavLink
+                  to={item.to}
+                  onClick={onSidebarClose}
+                  className={({ isActive }) =>
+                    cn(
+                      "group flex items-center gap-3 rounded-lg p-3 text-sm transition-colors duration-150",
+                      isActive
+                        ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    )
+                  }
                 >
-                  <LogOut size={20} className="transition-transform group-hover:-translate-x-1" />
-                  <span>Logout</span>
-                </button>
+                  <item.icon size={20} className="transition-transform duration-150 group-hover:scale-105" />
+                  <span>{item.label}</span>
+                </NavLink>
               </li>
-            </ul>
-          </div>
-        </motion.aside>
-      )}
-    </AnimatePresence>
+            ))}
+            
+            <li className="mt-4 border-t border-border/50 pt-4">
+              <button
+                onClick={() => {
+                  handleLogOut();
+                  onSidebarClose();
+                }}
+                className="group flex w-full items-center gap-3 rounded-lg p-3 text-sm text-destructive transition-colors duration-150 hover:bg-destructive/10"
+              >
+                <LogOut size={20} className="transition-transform duration-150 group-hover:-translate-x-0.5" />
+                <span>Logout</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </aside>
+    </>
   );
 };
