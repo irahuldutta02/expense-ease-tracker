@@ -20,15 +20,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.text());
 
-app.use(
-  cors({
-    origin: CLIENT_URL,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-    credentials: true,
-  }),
-);
+const corsOptions = {
+  origin: CLIENT_URL,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  credentials: true,
+};
 
-app.options("*", cors());
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 app.get("/", (req, res) => {
   return res.status(200).json({
