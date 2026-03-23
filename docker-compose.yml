@@ -1,39 +1,51 @@
-version: "3.9"
-
 services:
   expense-ease-mongodb:
     image: mongo:4.4
     container_name: expense-ease-mongodb
-    restart: always
-    command: ["mongod", "--bind_ip_all", "--port", "27018", "--wiredTigerCacheSizeGB", "0.2"]
+    restart: unless-stopped
+    command: [
+      "mongod",
+      "--bind_ip_all",
+      "--port", "27018",
+      "--wiredTigerCacheSizeGB", "0.2"
+    ]
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: admin
     volumes:
       - expense_ease_mongo_data:/data/db
-
+    healthcheck:
+      test: ["CMD", "mongo", "--port", "27018", "-u", "admin", "-p", "admin", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - expense-ease-network
 
   expense-ease-backend:
-    build: ./server
+    build:
+      context: ./server
     container_name: expense-ease-backend
-    restart: always
+    restart: unless-stopped
     ports:
       - "5001:5000"
     env_file:
       - ./server/.env
     depends_on:
-      - expense-ease-mongodb
+      expense-ease-mongodb:
+        condition: service_healthy
     networks:
       - expense-ease-network
 
   expense-ease-frontend:
-    build: ./client
+    build:
+      context: ./client
     container_name: expense-ease-frontend
-    restart: always
+    restart: unless-stopped
     ports:
       - "3003:80"
+    depends_on:
+      - expense-ease-backend
     networks:
       - expense-ease-network
 
