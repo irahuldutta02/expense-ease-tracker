@@ -1,28 +1,45 @@
 version: "3.9"
 
 services:
-  backend:
+  expense-ease-mongodb:
+    image: mongo:4.4
+    container_name: expense-ease-mongodb
+    restart: always
+    command: ["mongod", "--bind_ip_all", "--port", "27018", "--wiredTigerCacheSizeGB", "0.2"]
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: strongpassword123
+    volumes:
+      - expense_ease_mongo_data:/data/db
+
+    networks:
+      - expense-ease-network
+
+  expense-ease-backend:
     build: ./server
-    container_name: expense-backend
+    container_name: expense-ease-backend
     restart: always
     ports:
       - "5001:5000"
     env_file:
       - ./server/.env
+    depends_on:
+      - expense-ease-mongodb
     networks:
-      - app-network
+      - expense-ease-network
 
-  frontend:
+  expense-ease-frontend:
     build: ./client
-    container_name: expense-frontend
+    container_name: expense-ease-frontend
     restart: always
     ports:
       - "3003:80"
-    env_file:
-      - ./client/.env
     networks:
-      - app-network
+      - expense-ease-network
+
+volumes:
+  expense_ease_mongo_data:
 
 networks:
-  app-network:
+  expense-ease-network:
     external: true
