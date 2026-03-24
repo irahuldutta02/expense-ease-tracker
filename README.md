@@ -1,46 +1,91 @@
-# expense-ease-tracker
+# 💸 ExpenseEase Tracker
 
-## Preview
-![preview](https://github.com/user-attachments/assets/8533c39e-01f1-42db-b2d3-a9a2e664dc3f)
+## 🔗 Live Demo
+👉 https://expense-ease.rahultech.in
 
-## Deployment
-### [Deployed at Vercel 🔗](https://expense-ease-tracker.vercel.app)
+---
 
-## Dummy Account
-- Email
-  ```
-  rdtech2002@gmail.com
-  ```
-- Password
-  ```
-  123456
-  ```
+## 📸 Preview
+![preview](./assets/preview.png)
 
-## Description
+---
 
-### ExpenseEase is a web application that helps you keep track of your expenses. It also gives you ai generated insights on your spending.
+## 🧪 Demo Credentials
 
-- You can add, edit, delete, and view your expenses and categorize them.
-- You can view your expenses in a tabular format.
-- You can view your expenses categorically, party wise or mode wise in a graphical format.
-- You can get ai generated insights on your spending.
-- You can filter you expenses based on date, category, party, mode with custom made filters components.
-- You can export your expenses in a csv format.
-- You can make changes to your expenses in bulk.
-- Auto logout feature is there after 24 hours.
+- **Email:** rdtech2002@gmail.com  
+- **Password:** 123456  
 
-## Local Setup
+---
 
-### 1. Clone the repo
+## 🚀 About the Project
+
+**ExpenseEase** is a full-stack web application designed to help users efficiently manage and analyze their expenses.
+
+It not only allows tracking of daily expenses but also provides **AI-powered insights** to understand spending behavior better.
+
+---
+
+## ✨ Features
+
+- ➕ Add, edit, delete, and view expenses  
+- 📊 Categorize expenses (category, party, payment mode)  
+- 📈 Visualize data using charts and graphs  
+- 🤖 AI-generated insights on spending  
+- 🔍 Advanced filtering (date, category, party, mode)  
+- 📁 Export expenses as CSV  
+- 🧾 Bulk edit expenses  
+- 🔐 JWT-based authentication  
+- ⏳ Auto logout after 24 hours  
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+- React
+- Redux Toolkit + RTK Query
+- TailwindCSS
+- Chart.js
+- React Router DOM
+- React Hot Toast
+- React Markdown
+- React CSV
+
+### Backend
+- Node.js
+- Express.js
+- MongoDB + Mongoose
+- JWT Authentication
+- Multer (file uploads)
+- Nodemailer (email service)
+- Google Generative AI API
+
+
+## ⚙️ Local Setup
+
+### 1️⃣ Clone the Repository
 
 ```bash
 git clone https://github.com/irahuldutta02/expense-ease-tracker
 cd expense-ease-tracker
-```
+````
 
-### 2. Create a .env file in the server folder, client folder and set up the environment variables accordingly the sample.env files are provided in the respective folders.
+---
 
-### 3. Install dependencies and run the server
+### 2️⃣ Setup Environment Variables
+
+Create `.env` files in both:
+
+* `client/`
+* `server/`
+
+Use the provided `sample.env` files as reference.
+
+---
+
+### 3️⃣ Run the Application
+
+#### ▶️ Start Frontend
 
 ```bash
 cd client
@@ -48,33 +93,26 @@ npm install
 npm run dev
 ```
 
+#### ▶️ Start Backend
+
 ```bash
 cd server
 npm install
 npm run dev
 ```
 
-## Tech Stack
+---
 
-### Frontend
+## 🌐 Deployment
 
-- **React**
-- **Redux Toolkit**
-- **RTK Query**
-- **TailwindCSS**
-- **Chart.js**
-- **React Router Dom**
-- **React Hot Toast**
-- **React Markdown**
-- **React CSV**
+The application is deployed on a VPS with:
 
-### Backend
+* Docker
+* Nginx
+---
 
-- **Node.js**
-- **Express.js**
-- **Mongoose**
-- **MongoDB**
-- **JWT (jsonwebtoken)**
-- **Multer**
-- **Nodemailer**
-- **Google Generative AI API**
+## 👨‍💻 Author
+
+[**Rahul Dutta**](https://www.linkedin.com/in/irahuldutta02)
+
+---
