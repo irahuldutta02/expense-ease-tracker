@@ -1,28 +1,16 @@
 # ---------- BUILD STAGE ----------
-FROM node:20-bullseye AS build
+FROM node:20-bookworm-slim AS build
 
 WORKDIR /app
 
-# Install deps required for sharp (safe even if not used)
-RUN apt-get update && apt-get install -y \
-    python3 \
-    make \
-    g++ \
-    libvips \
-    libvips-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-# Prevent sharp from downloading broken binaries
-ENV SHARP_IGNORE_GLOBAL_LIBVIPS=1
-
-# Install dependencies
+# Install dependencies (cached layer)
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --prefer-offline --no-audit --progress=false
 
 # Copy source
 COPY . .
 
-# Build app (Vite/React)
+# Build app
 RUN npm run build
 
 
@@ -32,7 +20,7 @@ FROM nginx:alpine
 # Remove default config
 RUN rm /etc/nginx/conf.d/default.conf
 
-# Copy your custom nginx config
+# Copy custom nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy build output
