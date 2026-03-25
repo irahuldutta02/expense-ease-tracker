@@ -14,8 +14,6 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: admin
     volumes:
       - expense_ease_mongo_data:/data/db
-    ports:
-      - "27018:27018"
     healthcheck:
       test: ["CMD", "mongo", "--port", "27018", "-u", "admin", "-p", "admin", "--eval", "db.adminCommand('ping')"]
       interval: 10s
