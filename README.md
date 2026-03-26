@@ -10,13 +10,6 @@
 
 ---
 
-## 🧪 Demo Credentials
-
-- **Email:** rdtech2002@gmail.com  
-- **Password:** 123456  
-
----
-
 ## 🚀 About the Project
 
 **ExpenseEase** is a full-stack web application designed to help users efficiently manage and analyze their expenses.
