@@ -1,6 +1,6 @@
 # 💸 ExpenseEase Tracker
 
-## 🔗 Live Demo
+## 🔗 Live
 👉 https://expense-ease.rahultech.in
 
 ---
