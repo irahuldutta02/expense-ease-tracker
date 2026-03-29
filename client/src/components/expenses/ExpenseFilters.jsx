@@ -1,6 +1,4 @@
 import { Search, SlidersHorizontal, Plus, Minus, RotateCcw, Brain, BarChart3, ChevronDown, Check } from "lucide-react";
-import { Link } from "react-router-dom";
-import { useState } from "react";
 import { cn } from "../../utils/cn";
 import toast from "react-hot-toast";
 
@@ -219,7 +217,7 @@ export const ExpenseFilters = ({
 
       {/* Analytics & Tools Bar */}
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-card/80 backdrop-blur-md p-3.5 rounded-[2rem] border shadow-lg">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap justify-center">
           <button
             onClick={() => {
               if (!isDateRangeValid()) {
@@ -232,6 +230,14 @@ export const ExpenseFilters = ({
             className="flex items-center gap-2.5 px-6 py-2.5 rounded-[1.25rem] bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-sm font-bold shadow-lg shadow-indigo-600/20 hover:scale-105 transition-all active:scale-[0.98] disabled:opacity-50 disabled:scale-100"
           >
             <Brain size={18} strokeWidth={2.5} /> AI Insight
+          </button>
+
+          <button
+            onClick={() => setShowCharts(true)}
+            disabled={!hasData}
+            className="flex items-center gap-2.5 px-6 py-2.5 rounded-[1.25rem] bg-gradient-to-r from-sky-600 to-cyan-600 text-white text-sm font-bold shadow-lg shadow-sky-600/20 hover:scale-105 transition-all active:scale-[0.98] disabled:opacity-50 disabled:scale-100"
+          >
+            <BarChart3 size={18} strokeWidth={2.5} /> Charts
           </button>
         </div>
 

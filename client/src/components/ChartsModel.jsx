@@ -9,9 +9,9 @@ import {
 } from "chart.js";
 import { saveAs } from "file-saver";
 import moment from "moment";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
-import { FaTimes } from "react-icons/fa";
+import { X, BarChart3, Download } from "lucide-react";
 import * as XLSX from "xlsx";
 import { processExpensesData } from "../utils/processData";
 
@@ -26,6 +26,24 @@ ChartJS.register(
 
 const ChartsModel = ({ expenses, closeShowCharts }) => {
   const [view, setView] = useState("category");
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+
+    const updateViewport = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+
+    document.body.style.overflow = "hidden";
+    updateViewport();
+    window.addEventListener("resize", updateViewport);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("resize", updateViewport);
+    };
+  }, []);
 
   const csvData = expenses.map((expense) => {
     return {
@@ -178,18 +196,53 @@ const ChartsModel = ({ expenses, closeShowCharts }) => {
     plugins: {
       legend: {
         position: "top",
+        labels: {
+          color: "hsl(var(--foreground))",
+          boxWidth: isMobile ? 12 : 20,
+          font: {
+            weight: "700",
+            size: isMobile ? 11 : 13,
+          },
+        },
       },
       title: {
         display: true,
         text: `Total Cash In and Cash Out by ${
           view.charAt(0).toUpperCase() + view.slice(1)
         }`,
+        color: "hsl(var(--foreground))",
+        font: {
+          size: isMobile ? 13 : 16,
+          weight: "700",
+        },
       },
     },
     scales: {
       x: {
         ticks: {
-          autoSkip: false,
+          autoSkip: isMobile,
+          maxRotation: 0,
+          minRotation: 0,
+          color: "hsl(var(--muted-foreground))",
+          font: {
+            weight: "600",
+            size: isMobile ? 10 : 12,
+          },
+        },
+        grid: {
+          color: "hsla(var(--border) / 0.45)",
+        },
+      },
+      y: {
+        ticks: {
+          color: "hsl(var(--muted-foreground))",
+          font: {
+            weight: "600",
+            size: isMobile ? 10 : 12,
+          },
+        },
+        grid: {
+          color: "hsla(var(--border) / 0.45)",
         },
       },
     },
@@ -197,57 +250,67 @@ const ChartsModel = ({ expenses, closeShowCharts }) => {
 
   return (
     <>
-      <div className="fixed inset-0 bg-black bg-opacity-70 z-50"></div>
+      <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm"></div>
       <div
         id="close-model"
-        className="fixed inset-0 flex justify-center items-start sm:m-4 sm:rounded-lg overflow-auto z-50"
+        className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4"
       >
-        <div className="w-full">
-          <div className="bg-white sm:rounded-lg shadow dark:bg-gray-700 min-h-screen sm:min-h-[95vh]">
+        <div className="flex h-full w-full items-center justify-center">
+          <div className="flex h-[calc(100dvh-1rem)] w-full max-w-7xl flex-col overflow-hidden rounded-[1.5rem] border border-border/60 bg-card shadow-2xl sm:h-[calc(100dvh-2rem)] sm:rounded-[2rem]">
             {/* header */}
-            <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600 w-full">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                Charts
-              </h3>
+            <div className="flex w-full shrink-0 items-start justify-between gap-4 border-b border-border/60 bg-muted/20 px-4 py-4 sm:px-8 sm:py-6">
+              <div className="flex items-start gap-4">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm sm:h-12 sm:w-12">
+                  <BarChart3 size={isMobile ? 20 : 22} strokeWidth={2.4} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-black tracking-tight text-foreground sm:text-2xl">
+                    Charts
+                  </h3>
+                  <p className="mt-1 max-w-md text-sm font-medium leading-6 text-muted-foreground">
+                    Explore cash flow patterns by category, party, and payment mode.
+                  </p>
+                </div>
+              </div>
               <button
                 type="button"
-                className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-border/60 bg-background text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
                 data-modal-hide="editUserModal"
                 onClick={closeShowCharts}
               >
-                <FaTimes size={20} />
+                <X size={18} strokeWidth={2.5} />
                 <span className="sr-only">Close modal</span>
               </button>
             </div>
             {/* body */}
-            <div className="p-6 space-y-6 w-full ">
+            <div className="flex min-h-0 flex-1 flex-col gap-4 bg-gradient-to-b from-transparent to-muted/10 p-4 sm:gap-6 sm:p-8">
               {/* vie switch btns */}
-              <div className="flex justify-center items-center gap-4 mb-4">
+              <div className="flex shrink-0 flex-wrap items-center justify-center gap-3">
                 <button
-                  className={`font-bold py-2 px-4 rounded w-32 ${
+                  className={`min-w-[120px] rounded-2xl px-4 py-2.5 text-sm font-black transition-all sm:min-w-[132px] ${
                     view === "category"
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200 text-gray-700"
+                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/15"
+                      : "border border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground"
                   }`}
                   onClick={() => setView("category")}
                 >
                   Category
                 </button>
                 <button
-                  className={`font-bold py-2 px-4 rounded w-32 ${
+                  className={`min-w-[120px] rounded-2xl px-4 py-2.5 text-sm font-black transition-all ${
                     view === "party"
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200 text-gray-700"
+                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/15"
+                      : "border border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground"
                   }`}
                   onClick={() => setView("party")}
                 >
                   Party
                 </button>
                 <button
-                  className={`font-bold py-2 px-4 rounded w-32 ${
+                  className={`min-w-[120px] rounded-2xl px-4 py-2.5 text-sm font-black transition-all ${
                     view === "mode"
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200 text-gray-700"
+                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/15"
+                      : "border border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground"
                   }`}
                   onClick={() => setView("mode")}
                 >
@@ -256,17 +319,18 @@ const ChartsModel = ({ expenses, closeShowCharts }) => {
               </div>
 
               {/* excel export */}
-              <div className="flex justify-center items-center gap-4 mb-4">
+              <div className="flex shrink-0 items-center justify-center gap-4">
                 <button
                   onClick={downloadExcel}
-                  className="inline-block relative px-4 py-2 bg-green-500 text-white font-sans text-base text-center border-none hover:bg-green-600"
+                  className="inline-flex items-center gap-2 rounded-2xl border border-border bg-background px-4 py-2.5 text-sm font-bold text-foreground shadow-sm transition-all hover:bg-muted"
                 >
+                  <Download size={16} strokeWidth={2.4} />
                   Download Excel
                 </button>
               </div>
 
-              <div className="overflow-x-auto">
-                <div className="chart-container min-w-[1000px] h-[600px]">
+              <div className="min-h-0 flex-1 rounded-[1.75rem] border border-border/60 bg-background/80 p-3 shadow-sm sm:rounded-[2rem] sm:p-6">
+                <div className="chart-container h-full min-h-[280px] w-full sm:min-h-[360px]">
                   <Bar data={data} options={options} />
                 </div>
               </div>

@@ -218,7 +218,6 @@ const deleteExpense = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(404);
-    console.error(error);
     throw new Error(error?.message || "Expense not found");
   }
 });

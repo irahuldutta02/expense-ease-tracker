@@ -46,7 +46,6 @@ const createParty = asyncHandler(async (req, res) => {
       data: createdParty,
     });
   } catch (error) {
-    console.error(error);
     res.status(404);
     throw new Error(error?.message || "Party not created");
   }

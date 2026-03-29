@@ -14,6 +14,7 @@ import {
 import { useGetModesQuery } from "../redux/modeApiSlice";
 import { useGetPartiesQuery } from "../redux/partyApiSlice";
 import { BulkActionModel } from "../components/BulkActionModel";
+import ChartsModel from "../components/ChartsModel";
 
 // New Components
 import { ExpenseSummary } from "../components/expenses/ExpenseSummary";

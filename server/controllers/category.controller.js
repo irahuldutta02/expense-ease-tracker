@@ -46,7 +46,6 @@ const createCategory = asyncHandler(async (req, res) => {
       data: createdCategory,
     });
   } catch (error) {
-    console.error(error);
     res.status(404);
     throw new Error(error?.message || "Category not created");
   }

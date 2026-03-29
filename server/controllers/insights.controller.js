@@ -134,7 +134,6 @@ Markdown table with total amount and share of total.
       model: usedModel,
     });
   } catch (error) {
-    console.error("OpenRouter Error:", error.response?.data || error.message);
     res.status(500);
     throw new Error(
       error.response?.data?.error?.message ||

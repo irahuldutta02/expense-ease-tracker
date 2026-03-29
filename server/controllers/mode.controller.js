@@ -46,7 +46,6 @@ const createMode = asyncHandler(async (req, res) => {
       data: createdMode,
     });
   } catch (error) {
-    console.error(error);
     res.status(404);
     throw new Error(error?.message || "Mode not created");
   }
