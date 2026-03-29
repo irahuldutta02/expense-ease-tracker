@@ -130,8 +130,10 @@ export const ExpenseFilters = ({
           <button
             onClick={() => setShowFilters(!showFilters)}
             className={cn(
-              "flex items-center gap-2 px-6 py-3.5 rounded-[1.25rem] text-sm font-black border transition-all hover:bg-muted shadow-sm active:scale-95",
-              showFilters && "bg-primary text-primary-foreground border-primary shadow-xl shadow-primary/20"
+              "flex items-center gap-2 px-6 py-3.5 rounded-[1.25rem] text-sm font-black border transition-all shadow-sm active:scale-95",
+              showFilters
+                ? "bg-primary text-primary-foreground border-primary shadow-xl shadow-primary/20 hover:bg-primary/90"
+                : "bg-card text-foreground border-border/60 hover:bg-muted"
             )}
           >
             <SlidersHorizontal size={18} />
